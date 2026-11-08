@@ -1,0 +1,100 @@
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import PropTypes from "prop-types";
+import Modal from "../atoms/Modal";
+import { InputField } from "../atoms/InputField";
+import { useAuth } from "../../context/AuthContext";
+import logo from "../../assets/logo.png";
+
+const Login = ({ isOpen, onClose, openRegister }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const { login } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("🔹 Intentando hacer login con:", email, password);
+
+    const result = await login(email, password);
+    console.log("🔹 Resultado del login:", result);
+
+    if (result.success) {
+      setTimeout(() => {
+        console.log(
+          "🔹 Usuario guardado en localStorage:",
+          JSON.parse(localStorage.getItem("user"))
+        );
+      }, 500);
+
+      onClose();
+      setEmail("");
+      setPassword("");
+    } else {
+      console.error("❌ Error en login:", result.message);
+      setErrorMessage(result.message);
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} backgroundOpacity="10%">
+      <form className="flex flex-col space-y-6 p-6" onSubmit={handleSubmit}>
+        <img src={logo} alt="Terranova Logo" className="h-20 w-auto mx-auto" />
+        <h2 className="text-center text-2xl font-bold mt-4">
+          Bienvenido a Terranova
+        </h2>
+        <InputField
+          label="Correo Electrónico"
+          placeholder="Correo Electrónico"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="username"
+          required
+        />
+        <InputField
+          label="Contraseña"
+          placeholder="Contraseña"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
+          required
+        />
+
+        {errorMessage && (
+          <p className="text-red-600 text-sm text-center w-full my-5">
+            {errorMessage}
+          </p>
+        )}
+
+        <a href="#" className="text-[var(--color-emphasis)] text-right">
+          ¿Olvidaste tu contraseña?
+        </a>
+        <button
+          className="bg-[var(--color-secondary)] text-white px-4 py-2 rounded transition-transform transform hover:scale-105 active:scale-95 cursor-pointer"
+          type="submit"
+        >
+          Iniciar Sesión
+        </button>
+        <p className="text-center text-sm mt-4">
+          ¿No tienes una cuenta?{" "}
+          <button
+            type="button"
+            onClick={openRegister}
+            className="text-[var(--color-emphasis)] hover:underline"
+          >
+            Regístrate aquí
+          </button>
+        </p>
+      </form>
+    </Modal>
+  );
+};
+
+Login.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+export default Login;

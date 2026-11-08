@@ -1,0 +1,61 @@
+services:
+  db:
+    image: mysql:8
+    container_name: terranova_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: terranova_db
+      MYSQL_USER: terranova
+      MYSQL_PASSWORD: terranova
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -proot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  backend:
+    build: ./backend/terranova
+    container_name: terranova_backend
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/terranova_db?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: terranova
+      SPRING_DATASOURCE_PASSWORD: terranova
+      APP_UPLOADS_DIR: /app/uploads
+      APP_UPLOADS_BASE_URL: http://localhost:8081/uploads/
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./backend/terranova/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8081
+    container_name: terranova_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    environment:
+      - CHOKIDAR_USEPOLLING=true   
+    volumes:
+      - ./frontend:/app                    
+      - /app/node_modules  
+
+volumes:
+  db_data:

@@ -1,0 +1,217 @@
+/* eslint-disable react/prop-types */
+import { createContext, useContext, useState, useEffect } from "react";
+import { loginUser } from "../apis/login";
+import { API_BASE_URL } from "../constants/endpoints";
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchUserOnLoad = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        console.log("🔹 Intentando recuperar perfil al cargar la app...");
+        const userData = await obtenerPerfil();
+        if (userData) {
+          setUser(userData);
+        }
+      }
+    };
+    fetchUserOnLoad();
+  }, []);
+
+  const obtenerPerfil = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error(
+          " No hay token en localStorage, no se puede obtener perfil."
+        );
+        return null;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/usuarios/perfil`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("No se pudo obtener el perfil del usuario.");
+      }
+
+      const userData = await response.json();
+      return {
+        id: userData.id,
+        nombre: userData.nombre,
+        apellido: userData.apellido,
+        email: userData.email,
+        usuarioRole: userData.usuarioRole,
+      };
+    } catch (error) {
+      console.error("Error en obtenerPerfil:", error.message);
+      return null;
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      const result = await loginUser(email, password);
+      if (!result.token) {
+        return { success: false, message: "No se pudo obtener el token." };
+      }
+
+      localStorage.setItem("token", result.token);
+      const userData = await obtenerPerfil();
+      if (!userData) {
+        return {
+          success: false,
+          message: "No se pudo obtener el perfil del usuario.",
+        };
+      }
+
+      setUser(userData);
+      return { success: true, token: result.token, user: userData };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  const listarUsuarios = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error(
+          "No hay token en localStorage, no se puede obtener la lista de usuarios."
+        );
+        return [];
+      }
+
+      console.log("🔹 Obteniendo lista de usuarios...");
+      const response = await fetch(`${API_BASE_URL}/usuarios/listar`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("No se pudo obtener la lista de usuarios.");
+      }
+
+      const usuarios = await response.json();
+      console.log("Lista de usuarios obtenida:", usuarios);
+      return usuarios;
+    } catch (error) {
+      console.error("Error en listarUsuarios:", error.message);
+      return [];
+    }
+  };
+
+  const cambiarRolUsuario = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error(
+          "❌ No hay token en localStorage, no se puede cambiar el rol."
+        );
+        return { success: false, message: "No se encontró el token." };
+      }
+
+      console.log(`🔹 Cambiando rol del usuario con ID: ${id}...`);
+      const response = await fetch(
+        `${API_BASE_URL}/usuarios/cambiarRol/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("No se pudo cambiar el rol del usuario.");
+      }
+
+      console.log("✅ Rol cambiado exitosamente");
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Error en cambiarRolUsuario:", error.message);
+      return { success: false, message: error.message };
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/usuarios/registrar`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || "Error al registrar usuario.");
+      }
+
+      const result = await response.json();
+      console.log("✅ Usuario registrado:", result);
+
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("❌ Error en register:", error.message);
+      return { success: false, message: error.message };
+    }
+  };
+
+  const obtenerReservasUsuario = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/reservas/usuario/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("No se pudieron obtener las reservas.");
+      const reservas = await response.json();
+      return reservas;
+    } catch (error) {
+      console.error("❌ Error al obtener reservas del usuario:", error.message);
+      return [];
+    }
+  };
+
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        error,
+        listarUsuarios,
+        cambiarRolUsuario,
+        register,
+        obtenerReservasUsuario,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

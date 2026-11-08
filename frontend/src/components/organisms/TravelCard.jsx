@@ -1,0 +1,41 @@
+/* eslint-disable react/prop-types */
+import { Heart, MapPin, Clock } from "lucide-react";
+
+const TravelCard = ({ imagenes, pais, titulo, precio, duracion, onDetail }) => {
+  return (
+    <div
+      className="bg-white shadow-lg rounded-xl overflow-hidden w-full max-w-sm"
+      onClick={onDetail}
+    >
+      <div className="relative">
+        <img src={imagenes} alt={titulo} className="w-full h-48 object-cover" />
+        <button className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
+          <Heart className="text-[var(--color-emphasis)]" />
+        </button>
+      </div>
+
+      <div className="p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2 text-[var(--color-default)]">
+            <MapPin size={18} className="text-[var(--color-emphasis)]" />
+            <span className="text-sm">{pais}</span>
+          </div>
+          <div className="flex items-center space-x-1 text-gray-600 text-sm">
+            <Clock size={16} className="text-[var(--color-emphasis)]" />
+            <span>Duración: {duracion} días</span>
+          </div>
+        </div>
+
+        <h3 className="text-lg font-semibold text-[var(--color-default)] mt-2">
+          {titulo}
+        </h3>
+
+        <p className="text-[var(--color-emphasis)] font-bold text-lg mt-1">
+          USD ${precio}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default TravelCard;
