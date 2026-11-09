@@ -1,7 +1,6 @@
 import { API_BASE_URL } from "../constants/endpoints";
 export const loginUser = async (email, password) => {
   try {
-    console.log("🔹 Enviando login con:", email, password);
 
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
@@ -20,11 +19,9 @@ export const loginUser = async (email, password) => {
     }
 
     const textResponse = await response.text();
-    console.log("🔹 Respuesta cruda del servidor:", textResponse);
 
     try {
       const data = JSON.parse(textResponse);
-      console.log("🔹 Respuesta JSON final desde loginUser:", data);
       return data;
     } catch (error) {
       console.error("❌ Error al parsear JSON del login:", error.message);
