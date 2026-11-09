@@ -10,6 +10,7 @@ import { useAuth } from "./context/AuthContext";
 import SearchResults from "./components/pages/SearchResults";
 import ReservationDetail from "./components/pages/ReservationDetail";
 import { MisReservas } from "./components/pages/MisReservas";
+import Favoritos from "./components/pages/Favoritos";
 
 // eslint-disable-next-line react/prop-types
 const AdminRoute = ({ children }) => {
@@ -33,6 +34,7 @@ const App = () => {
 
   useEffect(() => {
     console.log("Usuario en localStorage:", localStorage.getItem("loggedUser"));
+
     setLoading(false);
   }, []);
 
@@ -50,6 +52,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/detalle/:id" element={<DetailCard />} />
+        <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/resultados" element={<SearchResults />} />
         <Route
           path="/detalle-reserva"
