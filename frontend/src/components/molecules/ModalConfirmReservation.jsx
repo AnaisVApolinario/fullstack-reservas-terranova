@@ -21,56 +21,49 @@ export const ModalConfirmReservation = ({
   return (
     <Modal isOpen={modal.isOpen} onClose={() => setModal({ isOpen: false })}>
       {modal.success ? (
-        <>
-          <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-          <h2 className="text-center text-lg font-bold text-[var(--color-default)] mb-2">
-            Reserva exitosa
-          </h2>
-          <div className="text-left text-gray-700 space-y-2">
-            <p className="flex items-center gap-2 text-sm">
-              <MapPin className="w-4 h-4 text-[var(--color-emphasis)]" />
-              <span>{tour.pais}</span>
+        <div className="p-8 pt-10 text-center">
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-soft text-ok">
+            <CheckCircle size={34} />
+          </span>
+          <h2 className="mt-4 text-3xl font-extrabold text-ink">¡Reserva confirmada!</h2>
+          <p className="mt-1 text-muted">Ya tienes tu lugar. Estos son los datos:</p>
+          <div className="mt-6 rounded-2xl bg-primary p-5 text-left space-y-3">
+            <p className="font-display text-xl font-bold text-ink">{tour.titulo}</p>
+            <p className="flex items-center gap-2.5 text-sm text-ink">
+              <MapPin size={18} className="text-brand-deep" /> {tour.pais}
             </p>
-            <p className="text-lg font-bold text-[var(--color-default)]">
-              {tour.titulo}
+            <p className="flex items-center gap-2.5 text-sm text-ink">
+              <User size={18} className="text-brand-deep" /> {guests} {Number(guests) === 1 ? "persona" : "personas"}
             </p>
-            <p className="flex items-center gap-2">
-              <User className="w-5 h-5 text-[var(--color-emphasis)]" />
-              {guests} personas
-            </p>
-            <p className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-[var(--color-emphasis)]" />
-              {startDate
-                ? new Date(startDate).toLocaleDateString()
-                : "No seleccionada"}{" "}
-              -{" "}
-              {endDate
-                ? new Date(endDate).toLocaleDateString()
-                : "No seleccionada"}
+            <p className="flex items-center gap-2.5 text-sm text-ink">
+              <Calendar size={18} className="text-brand-deep" />
+              {startDate ? new Date(startDate).toLocaleDateString() : "No seleccionada"} –{" "}
+              {endDate ? new Date(endDate).toLocaleDateString() : "No seleccionada"}
             </p>
           </div>
-          <p className="text-center font-medium text-[var(--color-default)] mt-4">
-            Tu reserva se realizó con éxito
-          </p>
-          <div className="w-full flex items-center justify-center">
-            {" "}
-            <button
-              onClick={() => navigate("/")}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-            >
-              Ok
+          <div className="mt-6 flex gap-3">
+            <button onClick={() => navigate("/mis-reservas")} className="btn btn-ghost flex-1">
+              Ver mis reservas
+            </button>
+            <button onClick={() => navigate("/")} className="btn btn-primary flex-1">
+              Ir al inicio
             </button>
           </div>
-        </>
-     ) : (
-      <>
-        <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-2" />
-        <p className="text-center font-bold">Error en la reserva</p>
-        <p className="text-center font-medium text-[var(--color-default)] mt-4">
-          {modal.message || "Hubo un problema al procesar la reserva. Intenta nuevamente más tarde."}
-        </p>
-      </>
-    )}
+        </div>
+      ) : (
+        <div className="p-8 pt-10 text-center">
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sun-soft text-sun">
+            <AlertTriangle size={32} />
+          </span>
+          <h2 className="mt-4 text-2xl font-extrabold text-ink">No pudimos reservar</h2>
+          <p className="mt-2 text-muted">
+            {modal.message || "Hubo un problema al procesar la reserva. Intenta nuevamente más tarde."}
+          </p>
+          <button onClick={() => setModal({ isOpen: false })} className="btn btn-primary mt-6 px-8">
+            Entendido
+          </button>
+        </div>
+      )}
     </Modal>
   );
 };

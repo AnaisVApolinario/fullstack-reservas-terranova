@@ -33,8 +33,6 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Usuario en localStorage:", localStorage.getItem("loggedUser"));
-
     setLoading(false);
   }, []);
 

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
+import { MapPin, CalendarDays, Search, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -18,6 +19,7 @@ export const BookingForm = ({ activeCategory }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const datePickerRef = useRef(null);
+  const placesRef = useRef(null);
 
   const handleSelectPlace = (place) => {
     setFormData({ ...formData, pais: place });
@@ -57,7 +59,6 @@ export const BookingForm = ({ activeCategory }) => {
 
     }).toString();
 
-    console.log("➡️ Query Params:", queryParams); // Para depuración
     await searchTours(filters);
     navigate(`/resultados?${queryParams}`);
   };
@@ -83,108 +84,128 @@ export const BookingForm = ({ activeCategory }) => {
   }, [showDatePicker]);
 
   useEffect(() => {
+    const closePlaces = (e) => {
+      if (placesRef.current && !placesRef.current.contains(e.target)) {
+        setFilteredPlaces([]);
+      }
+    };
+    document.addEventListener("mousedown", closePlaces);
+    return () => document.removeEventListener("mousedown", closePlaces);
+  }, []);
+
+  useEffect(() => {
     if (formData.pais && formData.fechaInicio && formData.fechaFin) {
       setErrors("");
     }
   }, [formData.fechaInicio, formData.fechaFin, formData.pais]);
 
+  const rango =
+    formData.fechaInicio && formData.fechaFin
+      ? `${formData.fechaInicio.toLocaleDateString()} – ${formData.fechaFin.toLocaleDateString()}`
+      : "";
+
   return (
-    <div className="flex flex-col w-full p-6 gap-6 bg-white rounded-lg shadow-md">
-      <h3 className="font-medium text-[var(--color-default)] text-3xl text-center w-full">
-        ¿Estás listo/a para tu próxima aventura en Latinoamérica?
-      </h3>
-      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-        <div className="flex w-full gap-4 items-center justify-center">
-          <div className="relative w-1/2">
-            <label
-              className="text-sm font-semibold text-gray-700 block mb-1"
-              htmlFor="location"
-            >
-              Dónde
-            </label>
-            <button
-              id="location"
-              type="button"
-              className="w-full bg-white border border-gray-300 px-4 py-2 rounded-lg text-left shadow-sm focus:ring-2 focus:ring-blue-400 transition-all"
-              onClick={() => setFilteredPlaces(PAIS)}
-            >
-              {formData.pais || "Elige un destino"}
-            </button>
-            {filteredPlaces.length > 0 && (
-              <ul className="absolute z-10 bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-40 overflow-y-auto shadow-md">
-                {filteredPlaces.map((place) => (
-                  <li
-                    key={`${place}-places3`}
-                    className="p-2 cursor-pointer hover:bg-gray-200 transition-all"
-                    onClick={() => handleSelectPlace(place)}
-                  >
-                    {place}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div className="relative w-1/2">
-            <label className="text-sm font-semibold text-gray-700 block mb-1">
-              Cuándo
-            </label>
-            <button
-              type="button"
-              className="w-full bg-white border border-gray-300 px-4 py-2 rounded-lg text-left shadow-sm focus:ring-2 focus:ring-blue-400 transition-all"
-              onClick={() => setShowDatePicker(true)}
-            >
-              {formData.fechaInicio && formData.fechaFin
-                ? `${formData.fechaInicio.toLocaleDateString()} - ${formData.fechaFin.toLocaleDateString()}`
-                : "Indica las fechas"}
-            </button>
-            {showDatePicker && (
-              <div
-                ref={datePickerRef}
-                className="absolute z-50 bg-white shadow-lg rounded-lg mt-2 p-2 border border-gray-300"
-              >
-                <DatePicker
-                  selected={formData.fechaInicio}
-                  onChange={(dates) => {
-                    const [start, end] = dates;
-                    setFormData({
-                      ...formData,
-                      fechaInicio: start,
-                      fechaFin: end,
-                    });
-
-                    if (start && end) {
-                      setShowDatePicker(false);
-                    }
-                  }}
-                  startDate={formData.fechaInicio}
-                  endDate={formData.fechaFin}
-                  selectsRange
-                  inline
-                  minDate={new Date()}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {errors && <p className="text-red-600 font-medium">{errors}</p>}
-
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-[1.75rem] shadow-[var(--shadow-lift)] p-4 md:p-5"
+    >
+      <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+      <div className="relative" ref={placesRef}>
+        <label className="field-label" htmlFor="location">Dónde</label>
         <button
-          type="submit"
-          className="w-full rounded-2xl bg-[var(--color-secondary)] text-white font-normal text-center h-[40px] disabled:opacity-50 transition-all duration-300 ease-in-out hover:bg-[var(--color-emphasis)] disabled:hover:bg-[var(--color-secondary)]"
-          disabled={!!errors || loading}
+          id="location"
+          type="button"
+          aria-haspopup="listbox"
+          className="field flex items-center gap-3"
+          onClick={() => setFilteredPlaces(PAIS)}
         >
-          {loading ? (
-            <div className="flex justify-center items-center gap-2">
-              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span>
-              Buscando...
-            </div>
-          ) : (
-            "Buscar"
-          )}
+          <MapPin size={18} className="text-brand-deep shrink-0" />
+          <span className={formData.pais ? "text-default" : "text-[#8aa0a5]"}>
+            {formData.pais || "Elige un destino"}
+          </span>
         </button>
-      </form>
+        {filteredPlaces.length > 0 && (
+          <ul
+            role="listbox"
+            className="absolute z-30 mt-2 w-full max-h-56 overflow-y-auto bg-white border border-line rounded-2xl shadow-[var(--shadow-lift)] p-1.5"
+          >
+            {filteredPlaces.map((place) => (
+              <li
+                key={`${place}-places3`}
+                role="option"
+                aria-selected={formData.pais === place}
+                className="px-3 py-2.5 rounded-xl cursor-pointer text-sm font-medium hover:bg-brand-soft"
+                onClick={() => handleSelectPlace(place)}
+              >
+                {place}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="relative">
+        <label className="field-label" htmlFor="dates">Cuándo</label>
+        <button
+          id="dates"
+          type="button"
+          className="field flex items-center gap-3"
+          onClick={() => setShowDatePicker(true)}
+        >
+          <CalendarDays size={18} className="text-brand-deep shrink-0" />
+          <span className={rango ? "text-default" : "text-[#8aa0a5]"}>
+            {rango || "Indica las fechas"}
+          </span>
+        </button>
+        {showDatePicker && (
+          <div ref={datePickerRef} className="absolute z-30 mt-2 left-0">
+            <DatePicker
+              selected={formData.fechaInicio}
+              onChange={(dates) => {
+                const [start, end] = dates;
+                setFormData({
+                  ...formData,
+                  fechaInicio: start,
+                  fechaFin: end,
+                });
+
+                if (start && end) {
+                  setShowDatePicker(false);
+                }
+              }}
+              startDate={formData.fechaInicio}
+              endDate={formData.fechaFin}
+              selectsRange
+              inline
+              minDate={new Date()}
+            />
+          </div>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="btn btn-sun h-[2.9rem] md:px-8"
+        disabled={!!errors || loading}
+      >
+        {loading ? (
+          <>
+            <span className="animate-spin border-2 border-ink border-t-transparent rounded-full w-4 h-4"></span>
+            Buscando...
+          </>
+        ) : (
+          <>
+            <Search size={18} /> Buscar
+          </>
+        )}
+      </button>
     </div>
+
+      {errors && (
+      <p role="alert" className="mt-3 flex items-center gap-2 rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm font-medium text-danger">
+        <AlertCircle size={16} /> {errors}
+      </p>
+    )}
+    </form>
   );
 };

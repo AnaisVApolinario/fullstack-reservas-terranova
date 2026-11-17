@@ -1,13 +1,13 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users, Map } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ITEMS_MENU_ADMIN } from "../../constants";
 import { ToursTable } from "../organisms/ToursTable";
 import { useTours } from "../../hooks/useTour";
 import { UsersTable } from "../organisms/UsersTable";
-import { TourEditForm } from "../organisms/TourEditForm"; // Corrección en el nombre del componente
+import { TourEditForm } from "../organisms/TourEditForm";
 
-
+const ICONOS = { Usuarios: Users, Tours: Map };
 
 export default function AdminPanel() {
   const [selected, setSelected] = useState("Usuarios");
@@ -16,53 +16,44 @@ export default function AdminPanel() {
   const { tours } = useTours();
 
   return (
-    <div className="px-6 py-24 mb-32">
-      <header className="flex w-full p-6 gap-4 justify-between mt-[30px] flex-col-reverse items-start md:flex-row">
-        <h1 className="font-bold uppercase text-3xl text-gray-500 text-center md:text-start">
-          PANEL DEL ADMINISTRADOR
-        </h1>
-        <button
-          className="flex items-center bg-transparent border-none justify-center gap-2 text-emphasis text-sm font-medium"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft /> Volver atrás
-        </button>
-      </header>
+    <main className="mx-auto w-full max-w-7xl px-5 pt-28 pb-8">
+      <button className="back-link" onClick={() => navigate(-1)}>
+        <ArrowLeft size={18} /> Volver atrás
+      </button>
+      <h1 className="mt-4 mb-8 text-4xl font-extrabold text-ink">Panel de administración</h1>
 
-      <div className="flex gap-6 my-8 flex-col md:flex-row">
-        <div className="flex flex-col bg-white shadow-lg p-4 rounded-lg border border-gray-300 w-full md:w-[20%]">
-          <h2 className="text-lg font-semibold text-center md:text-start md:mb-2 md:py-5 border-b border-gray-300">
-            Menú
-          </h2>
-          <ul className="flex flex-row w-full gap-6 md:flex-col md:gap-0 md:space-y-2 text-center md:text-start">
-            {ITEMS_MENU_ADMIN.map((item) => (
-              <li
+      <div className="grid items-start gap-6 md:grid-cols-[14rem_1fr]">
+        <nav aria-label="Secciones" className="surface p-2 flex md:flex-col gap-1">
+          {ITEMS_MENU_ADMIN.map((item) => {
+            const Icon = ICONOS[item];
+            const activo = selected === item;
+            return (
+              <button
                 key={item}
-                className={`cursor-pointer px-3 py-1 w-[50%] md:w-full rounded ${
-                  selected === item ? "text-black font-bold" : "text-gray-700"
-                } hover:text-black`}
+                aria-current={activo ? "page" : undefined}
+                className={`flex flex-1 md:flex-none items-center justify-center md:justify-start gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+                  activo ? "bg-ink text-white" : "text-ink hover:bg-brand-soft"
+                  }`}
                 onClick={() => {
                   setSelected(item);
                   setTourToEdit(null); // Ocultar el formulario si cambiamos de menú
                 }}
               >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+                {Icon && <Icon size={18} />} {item}
+              </button>
+            );
+          })}
+        </nav>
 
-        <div className="flex-1">
+        <div className="min-w-0">
           {selected === "Usuarios" && <UsersTable />}
           {selected === "Tours" && !tourToEdit && (
             <ToursTable tours={tours} onEdit={(tour) => setTourToEdit(tour)} />
           )}
 
-          {/* Mostrar Modal EditForm solo si hay un tour seleccionado */}
           {tourToEdit && <TourEditForm tour={tourToEdit} onClose={() => setTourToEdit(null)} />}
         </div>
       </div>
-    </div>
+    </main>
   );
-
 }

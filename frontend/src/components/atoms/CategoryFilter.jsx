@@ -1,30 +1,32 @@
 /* eslint-disable react/prop-types */
-export const CategoryFilter = ({ image, categoryName, onClick, isActive }) => {
+export const CategoryFilter = ({ image, icon, categoryName, onClick, isActive }) => {
   const activeClass = isActive
     ? "border-2 border-[var(--color-secondary)] bg-gray-100"
     : "hover:bg-gray-200";
 
   return (
-    <div
-      className={`flex flex-col justify-center items-center rounded-md 
-        px-2 py-1 md:px-4 md:py-4 cursor-pointer transition-all 
-        ${activeClass} w-[70px] md:w-[140px]`}
+   <button
+      type="button"
+      aria-pressed={isActive}
       onClick={onClick}
+      className={`group shrink-0 inline-flex items-center gap-2.5 rounded-full border-[1.5px] pl-1.5 pr-4 py-1.5 text-sm font-semibold transition-all ${
+        isActive
+          ? "bg-ink text-white border-ink shadow-[var(--shadow-card)]"
+          : "bg-white text-ink border-line hover:border-ink"
+      }`}
     >
-      <div className="rounded-full flex justify-center items-center bg-white w-4 h-4 md:w-8 md:h-8">
-        <img
-          src={image}
-          alt="Ícono categoría"
-          className="w-full h-full object-contain"
-        />
-      </div>
-      <p
-        className={`text-center mt-1 md:mt-2 text-[8px] md:text-sm ${
-          isActive ? "" : ""
+<span
+        className={`grid place-items-center h-9 w-9 rounded-full overflow-hidden ${
+          isActive ? "bg-white/15 text-white" : "bg-brand-soft text-brand-deep"
         }`}
       >
+        {image ? (
+          <img src={image} alt="" className="h-full w-full object-cover" />
+        ) : (
+          icon
+        )}
+      </span>
         {categoryName}
-      </p>
-    </div>
+     </button>
   );
 };

@@ -1,31 +1,25 @@
 /* eslint-disable react/prop-types */
-export const CharacteristicsSection = ({ characteristics }) => {
+export const CharacteristicsSection = ({ characteristics, small = false }) => {
   if (!characteristics || !Array.isArray(characteristics)) {
     return null;
   }
 
   return (
-    <div className="w-full flex flex-col gap-1">
-      <h4 className="font-semibold w-full">¿Qué encontrarás?</h4>
-      <p className="text-gray-400 text-sm w-full text-justify">
-        Características
-      </p>
-
-      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-8 mt-4">
+    <section className="w-full">
+      <h2 className={small ? "text-base font-bold text-ink" : "text-2xl font-extrabold text-ink"}>¿Qué incluye?</h2>
+      <ul className={`mt-4 grid gap-3 ${small ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 md:grid-cols-4"}`}>
         {characteristics.map((item, index) => (
-          <div
+          <li
             key={`${index}-charac`}
-            className="flex flex-col items-center justify-center text-center"
+            className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3"
           >
-            <img
-              src={item.urlIcono}
-              className="w-10 h-10"
-              alt={item.descripcion}
-            />
-            <p className="text-sm">{item.descripcion}</p>
-          </div>
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-soft">
+              <img src={item.urlIcono} className="h-7 w-7" alt="" />
+            </span>
+            <span className="text-sm font-semibold text-ink leading-tight">{item.descripcion}</span>
+          </li>
         ))}
-      </div>
-    </div>
+      </ul>
+    </section>
   );
 };

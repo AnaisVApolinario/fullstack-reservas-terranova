@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Search } from "lucide-react";
+import { Search, MapPin, CalendarDays, Compass } from "lucide-react";
 import { Categories } from "../molecules/Categories";
 import { PAIS } from "../../constants";
 import TravelCard from "../organisms/TravelCard";
@@ -79,7 +79,7 @@ const SearchResults = () => {
         fechaFin: formData.fechaFin.toISOString().split("T")[0],
         ...(activeCategory && activeCategory !== "all" && { categoria: activeCategory }),
       }).toString();
-      
+
 
       navigate(`/resultados?${queryParams}`);
     } catch (error) {
@@ -133,91 +133,99 @@ const SearchResults = () => {
     );
   }, [dataResult, activeCategory]);
 
+  const rango =
+    formData.fechaInicio && formData.fechaFin
+      ? `${formData.fechaInicio.toLocaleDateString("es-ES")} – ${formData.fechaFin.toLocaleDateString("es-ES")}`
+      : "";
+
   return (
-    <div className="p-6 mt-20">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-4 rounded-2xl shadow-lg flex items-center gap-4 mx-auto max-w-4xl"
-      >
-        <div className="relative flex-1">
-          <button
-            type="button"
-            className="bg-gray-100 px-4 py-2 rounded-lg text-sm w-full text-left"
-            onClick={() => setFilteredPlaces(PAIS)}
+    <div className="pt-[72px]">
+      <div className="bg-ink">
+        <div className="mx-auto max-w-5xl px-5 py-10">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-6">
+            {paisParam ? `Tours en ${paisParam}` : "Resultados de tu búsqueda"}
+          </h1>
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-3 rounded-[1.5rem] shadow-[var(--shadow-lift)] grid gap-3 md:grid-cols-[1fr_1fr_auto]"
           >
-            {formData.pais || "Dónde"}
-          </button>
-          {filteredPlaces.length > 0 && (
-            <ul className="absolute z-10 bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-40 overflow-y-auto shadow-md">
-              {filteredPlaces.map((place) => (
-                <li
-                  key={place}
-                  className="p-2 cursor-pointer hover:bg-gray-200 text-sm"
-                  onClick={() => handleSelectPlace(place)}
-                >
-                  {place}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+            <div className="relative">
+              <button
+                type="button"
+                className="field flex items-center gap-3"
+                onClick={() => setFilteredPlaces(PAIS)}
+              >
+                <MapPin size={18} className="text-brand-deep shrink-0" />
+                <span className={formData.pais ? "" : "text-[#8aa0a5]"}>{formData.pais || "Dónde"}</span>
+              </button>
+              {filteredPlaces.length > 0 && (
+                <ul className="absolute z-30 mt-2 w-full max-h-56 overflow-y-auto bg-white border border-line rounded-2xl shadow-[var(--shadow-lift)] p-1.5">
+                  {filteredPlaces.map((place) => (
+                    <li
+                      key={place}
+                      className="px-3 py-2.5 rounded-xl cursor-pointer text-sm font-medium hover:bg-brand-soft"
+                      onClick={() => handleSelectPlace(place)}
+                    >
+                      {place}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-        <div className="relative flex-1">
-          <button
-            type="button"
-            className="bg-gray-100 px-4 py-2 rounded-lg text-sm w-full text-left"
-            onClick={() => setShowDatePicker(true)}
-          >
-            {formData.fechaInicio && formData.fechaFin
-              ? `${formData.fechaInicio.toLocaleDateString(
-                  "es-ES"
-                )} - ${formData.fechaFin.toLocaleDateString("es-ES")}`
-              : "Cuándo"}
-          </button>
-          {showDatePicker && (
-            <div
-              ref={datePickerRef}
-              className="absolute z-50 bg-white shadow-lg rounded-lg mt-2"
+            <div className="relative">
+              <button
+                type="button"
+                className="field flex items-center gap-3"
+                onClick={() => setShowDatePicker(true)}
+              >
+                <CalendarDays size={18} className="text-brand-deep shrink-0" />
+                <span className={rango ? "" : "text-[#8aa0a5]"}>{rango || "Cuándo"}</span>
+              </button>
+              {showDatePicker && (
+                <div ref={datePickerRef} className="absolute z-30 mt-2 left-0">
+                  <DatePicker
+                    selected={formData.fechaInicio}
+                    onChange={(update) => {
+                      setFormData({
+                        ...formData,
+                        fechaInicio: update[0],
+                        fechaFin: update[1],
+                      });
+
+                      if (update[0] && update[1]) {
+                        setShowDatePicker(false);
+                      }
+                    }}
+                    startDate={formData.fechaInicio}
+                    endDate={formData.fechaFin}
+                    selectsRange
+                    inline
+                    minDate={new Date()}
+                  />
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-sun h-[2.9rem] md:px-7"
+              disabled={!!errors || loading}
             >
-              <DatePicker
-                selected={formData.fechaInicio}
-                onChange={(update) => {
-                  setFormData({
-                    ...formData,
-                    fechaInicio: update[0],
-                    fechaFin: update[1],
-                  });
-
-                  if (update[0] && update[1]) {
-                    setShowDatePicker(false);
-                  }
-                }}
-                startDate={formData.fechaInicio}
-                endDate={formData.fechaFin}
-                selectsRange
-                inline
-                minDate={new Date()}
-              />
-            </div>
-          )}
+              {loading ? (
+                <span className="animate-spin border-2 border-ink border-t-transparent rounded-full w-4 h-4"></span>
+              ) : (
+                <>
+                  <Search size={18} /> Buscar
+                </>
+              )}
+            </button>
+          </form>
+          {errors && <p role="alert" className="mt-3 text-sm font-medium text-sun">{errors}</p>}
         </div>
+      </div>
 
-        <button
-          type="submit"
-          className="bg-[var(--color-secondary)] text-white rounded-lg h-10 w-10 flex items-center justify-center transition-all duration-300 hover:bg-[var(--color-emphasis)]"
-          disabled={!!errors || loading}
-        >
-          {loading ? (
-            <div className="flex items-center gap-2">
-              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
-            </div>
-          ) : (
-            <Search size={18} />
-          )}
-        </button>
-      </form>
-
-      <div className="mt-8">
+      <main className="mx-auto max-w-7xl px-5 pt-10">
         <Categories
           categories={categoryData}
           activeCategory={activeCategory}
@@ -225,30 +233,41 @@ const SearchResults = () => {
             setActiveCategory((prev) => (prev === name || name === "all" ? "all" : name))
           }
         />
-      </div>
 
-      <div className="mt-8 text-center">
-        <p className="text-lg font-semibold">Resultados de tu búsqueda</p>
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredByCategory.map((place, i) => (
-          <TravelCard
-            key={`${i}-resulFilterTour`}
-            imagenes={place.imagenes[0].urlImagen}
-            pais={place.pais}
-            titulo={place.titulo}
-            precio={place.precio}
-            onDetail={() => navigate(`/detalle/${place.id}`)}
-          />
-        ))}
-      </div>
-
-      {filteredByCategory.length === 0 && (
-        <p className="text-center text-gray-500 mt-4">
-          No se encontraron tours que coincidan con los filtros seleccionados.
+        <p className="mt-10 mb-6 text-sm font-semibold text-muted">
+          {loading
+            ? "Buscando tours..."
+            : `${filteredByCategory.length} ${filteredByCategory.length === 1 ? "tour disponible" : "tours disponibles"}`}
         </p>
-      )}
+
+        {filteredByCategory.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredByCategory.map((place, i) => (
+              <TravelCard
+                key={`${i}-resulFilterTour`}
+                imagenes={place.imagenes[0].urlImagen}
+                pais={place.pais}
+                titulo={place.titulo}
+                precio={place.precio}
+                duracion={place.duracion}
+                categoria={place.categoriaTours?.nombre}
+                tour={place}
+                onDetail={() => navigate(`/detalle/${place.id}`)}
+              />
+            ))}
+          </div>
+        )}
+
+        {filteredByCategory.length === 0 && !loading && (
+          <div className="empty-state">
+            <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-soft text-brand-deep">
+              <Compass size={28} />
+            </span>
+            <p className="mt-4 font-display text-xl font-bold text-ink">No encontramos tours con esos filtros</p>
+            <p className="mt-2">Prueba con otras fechas, otro destino o quita la categoría.</p>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

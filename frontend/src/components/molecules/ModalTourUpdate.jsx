@@ -9,21 +9,22 @@ export const ModalTourUpdate = ({ showModal, tour }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-[#9799aaa8] flex justify-center items-start pt-20 overflow-y-auto md:top-12"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/55 backdrop-blur-sm p-4 fade-in"
       onClick={showModal}
     >
       <div
-        className="bg-white pt-10 px-6 py-4 rounded-lg shadow-lg relative flex flex-col items-center justify-start w-[90%] md:w-[700px] md:h-[80%] overflow-y-auto"
+        className="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-y-auto rounded-[1.75rem] bg-white px-6 pb-6 pt-14 shadow-[var(--shadow-lift)]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+          aria-label="Cerrar"
+          className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-brand-soft hover:text-ink"
           onClick={showModal}
         >
-          ✖
+          ✕
         </button>
         <div className="w-full overflow-y-auto flex-1">
-          <TourEditForm tour={tour} onClose={showModal} /> {/* ✅ Ahora pasa la función onClose */}
+               <TourEditForm tour={tour} onClose={showModal} /> {/* ✅ Ahora pasa la función onClose */}
         </div>
       </div>
     </div>

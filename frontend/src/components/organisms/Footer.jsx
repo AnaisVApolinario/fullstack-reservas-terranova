@@ -3,42 +3,43 @@ import logo from "../../assets/logo.png";
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-[var(--color-primary)]">
-      {/* Línea divisoria superior */}
-      <hr className="border-t-2 border-gray-300 my-6 w-11/12 mx-auto" />
-
-      <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Logo y frase */}
-        <div className="text-left">
-          <img src={logo} alt="Terranova Logo" className="h-12 w-auto mb-2" />
-          <h2 className="text-[var(--color-default)] text-lg font-bold">Terranova</h2>
-          <p className="text-[var(--color-default)]">Explora el mundo, una experiencia a la vez.</p>
+    <footer className="mt-24 bg-ink text-white">
+      <div className="mx-auto max-w-7xl px-5 py-12 grid gap-10 md:grid-cols-[1.4fr_1fr]">
+        <div>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="" className="h-12 w-auto" />
+            <span className="font-display font-extrabold text-2xl">Terranova</span>
+          </div>
+          <p className="mt-4 max-w-sm text-white/75 leading-relaxed">
+            Explora el mundo, una experiencia a la vez. Tours guiados por
+            Latinoamérica, con fechas claras y reserva en minutos.
+          </p>
         </div>
 
-        {/* Contacto */}
-        <div className="text-left md:text-right">
-          <h2 className="text-[var(--color-default)] text-lg font-bold">Contáctanos</h2>
-          <div className="mt-2 flex items-center md:justify-end">
-            <Mail className="text-[var(--color-emphasis)] mr-2" />
-            <span className="text-[var(--color-default)]">contacto@terranova.com</span>
-          </div>
-          <div className="mt-2 flex items-center md:justify-end">
-            <Phone className="text-[var(--color-emphasis)] mr-2" />
-            <span className="text-[var(--color-default)]">+51 999 999 999</span>
-          </div>
+        <div className="md:justify-self-end">
+          <h2 className="font-display text-lg font-bold">Contáctanos</h2>
+          <ul className="mt-4 space-y-3 text-white/85">
+            <li className="flex items-center gap-3">
+              <Mail size={18} className="text-sun" />
+              <a href="mailto:contacto@terranova.com" className="hover:text-white underline-offset-4 hover:underline">
+                contacto@terranova.com
+              </a>
+            </li>
+            <li className="flex items-center gap-3">
+              <Phone size={18} className="text-sun" />
+              <span>+51 999 999 999</span>
+            </li>
+          </ul>
         </div>
       </div>
 
-      {/* Línea divisoria inferior */}
-      <hr className="border-t-2 border-gray-300 my-4 w-11/12 mx-auto" />
-
-      {/* Copyright centrado */}
-      <p className="text-center text-[var(--color-default)] text-sm pb-4">
-        © 2025 Terranova. Todos los derechos reservados.
-      </p>
+      <div className="border-t border-white/10">
+        <p className="mx-auto max-w-7xl px-5 py-5 text-sm text-white/60">
+          © {new Date().getFullYear()} Terranova. Todos los derechos reservados.
+        </p>
+      </div>
     </footer>
   );
 };
 
 export default Footer;
-

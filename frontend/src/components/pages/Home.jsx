@@ -54,19 +54,52 @@ export default function Home() {
     navigate(`/resultados?${queryParams.toString()}`);
   };
 
+  const sinDatos = tours.length === 0;
+
   return (
     <div className="flex flex-col w-full">
       <HeroHome activeCategory={activeCategory} />
-      <div className="mt-6 mb-6 px-4 md:mt-16 md:mb-12 md:px-10">
+
+      <main className="mx-auto w-full max-w-7xl px-5 mt-14">
         <Categories
           categories={categoryData}
           onCategoryClick={handleCategoryClick}
           activeCategory={activeCategory}
         />
-      </div>
-      <div className="flex-grow bg-[var(--color-primary)] flex justify-center items-center">
-        <TravelCardContainer tours={filteredTours} />
-      </div>
+
+        <div className="mt-12 mb-6 flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h2 className="text-3xl font-extrabold text-ink">
+              {activeCategory === "all" ? "Tours para ti" : activeCategory}
+            </h2>
+            <p className="mt-1 text-muted">
+              {activeCategory === "all"
+                ? "Una selección distinta cada vez que entras."
+                : "Tours de esta categoría."}
+            </p>
+          </div>
+          {!sinDatos && (
+            <p className="text-sm font-semibold text-muted">
+              {filteredTours.length} {filteredTours.length === 1 ? "tour" : "tours"}
+            </p>
+          )}
+        </div>
+
+        {filteredTours.length > 0 ? (
+          <TravelCardContainer tours={filteredTours} />
+        ) : (
+          <div className="empty-state">
+            <p className="font-display text-xl font-bold text-ink">
+              {sinDatos ? "Aún no hay tours para mostrar" : "No hay tours en esta categoría"}
+            </p>
+            <p className="mt-2">
+              {sinDatos
+                ? "Si acabas de levantar el proyecto, espera unos segundos y recarga la página."
+                : "Prueba con otra categoría o vuelve a “Todas”."}
+            </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

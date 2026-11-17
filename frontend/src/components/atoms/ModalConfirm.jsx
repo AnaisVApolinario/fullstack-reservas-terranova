@@ -4,19 +4,14 @@ export const ModalConfirm = ({ isOpen, message, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center bg-black/50 z-50 transition-opacity duration-300 ${
-        isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-      }`}
-    >
-      <div className="bg-white p-6 rounded-2xl shadow-lg text-center w-80">
-        <CheckCircle className="mx-auto text-green-500 w-12 h-12" />
-        <p className="mt-4 text-gray-700">{message}</p>
-        <button
-          onClick={onClose}
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        >
-          OK
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/55 backdrop-blur-sm p-4 fade-in">
+      <div role="dialog" aria-modal="true" className="bg-white p-8 rounded-[1.75rem] shadow-[var(--shadow-lift)] text-center w-full max-w-sm">
+        <span className="mx-auto grid place-items-center h-16 w-16 rounded-full bg-brand-soft text-brand-deep">
+          <CheckCircle size={32} />
+        </span>
+        <p className="mt-4 text-ink font-medium">{message}</p>
+        <button onClick={onClose} className="btn btn-primary mt-6 px-8">
+          Entendido
         </button>
       </div>
     </div>

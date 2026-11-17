@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useId } from "react";
 /* eslint-disable react/prop-types */
 export const InputField = ({
   label,
@@ -7,17 +8,16 @@ export const InputField = ({
   autoComplete,
   ...props
 }) => {
+  const id = useId();
   return (
     <div className={clsx("flex flex-col", className)}>
-      <label className="text-default text-xs font-normal">{label}</label>
+      <label htmlFor={id} className="field-label">{label}</label>
       <input
         {...props}
+        id={id}
         type={type}
         autoComplete={autoComplete}
-        className={clsx(
-          "w-full h-8 rounded-lg outline-none border-2 border-solid border-primary",
-          props.className
-        )}
+        className={clsx("field", props.className)}
       />
     </div>
   );

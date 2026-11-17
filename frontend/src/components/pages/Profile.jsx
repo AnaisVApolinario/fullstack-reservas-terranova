@@ -36,8 +36,6 @@ export default function Profile() {
         }
 
         const data = await response.json();
-        console.log("✅ Datos del usuario obtenidos:", data);
-
         // Formateamos los datos para que coincidan con ProfileContainer
         setUserData({
           name: data.nombre,
@@ -56,28 +54,19 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="w-full py-10">
-      <header className="flex w-full p-6 gap-4 justify-between mt-[80px] flex-col-reverse items-start md:flex-row ">
-        <h1 className="font-bold uppercase text-3xl text-gray-500">
-          MI PERFIL{" "}
-        </h1>
-        <button
-          className="flex items-center bg-transparent border-none justify-center gap-2 text-emphasis text-sm font-medium"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft /> Volver atrás
-        </button>
-      </header>
+    <main className="mx-auto w-full max-w-3xl px-5 pt-28 min-h-[60vh]">
+      <button className="back-link" onClick={() => navigate(-1)}>
+        <ArrowLeft size={18} /> Volver atrás
+      </button>
+      <h1 className="mt-4 mb-8 text-4xl font-extrabold text-ink">Mi perfil</h1>
 
-      <div className="w-full flex justify-center items-center ">
-        {loading ? (
-          <p className="text-gray-500">Cargando perfil...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          <ProfileContainer user={userData} />
-        )}
-      </div>
-    </div>
+      {loading ? (
+        <p className="text-muted">Cargando perfil...</p>
+      ) : error ? (
+        <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 font-medium text-danger">{error}</p>
+      ) : (
+        <ProfileContainer user={userData} />
+      )}
+    </main>
   );
 }

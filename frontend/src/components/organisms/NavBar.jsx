@@ -6,6 +6,8 @@ import {
   LogOut,
   Settings,
   CalendarDays,
+  ChevronDown,
+  Heart,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import logo from "../../assets/logo.png";
@@ -104,187 +106,176 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [profileMenuOpen, menuOpen]);
-
-  return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50 px-6 py-4 flex justify-between items-center">
-      <Link to="/" className="flex items-center space-x-3">
-        <img src={logo} alt="Terranova Logo" className="h-14 w-auto" />
-        <span className="text-[var(--color-default)] font-bold text-lg">
-          Terranova
-        </span>
-      </Link>
-
-      <div className="hidden md:flex space-x-4 relative">
-        {user ? (
-          <div
-            className="flex items-center space-x-3 cursor-pointer"
-            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-          >
-            <div className="h-12 w-12 rounded-full flex items-center text-2xl font-bold justify-center bg-gray-200">
-              {getInitials(user.nombre, user.apellido)}
-            </div>
-            <span className="text-[var(--color-default)]">{user.nombre}</span>
-          </div>
-        ) : (
-          <>
-            <button
-              onClick={openRegister}
-              className="bg-[var(--color-secondary)] text-white px-4 py-2 rounded"
-            >
-              Crear Cuenta
-            </button>
-            <button
-              onClick={openLogin}
-              className="bg-[var(--color-emphasis)] text-white px-4 py-2 rounded"
-            >
-              Iniciar Sesión
-            </button>
-          </>
-        )}
-
-        {profileMenuOpen && user && (
-          <div
-            ref={profileMenuRef}
-            className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4 flex flex-col space-y-3 w-48"
-          >
-            <button
-              className="flex items-center space-x-2 py-2"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                navigate("/perfil");
-              }}
-            >
-              <User size={20} />
-              <span>Mi perfil</span>
-            </button>
-
-            {!isAdmin && (
-              <button
-                className="flex items-center space-x-2 py-2"
-                onClick={() => {
-                  setProfileMenuOpen(false);
-                  navigate("/mis-reservas");
-                }}
-              >
-                <CalendarDays size={20} />
-                <span>Mis reservas</span>
-              </button>
-            )}
-
-            {isAdmin && (
-              <button
-                className="flex items-center space-x-2 py-2"
-                onClick={() => {
-                  navigate("/panel-administrador");
-                  setProfileMenuOpen(false);
-                }}
-              >
-                <Settings size={20} />
-                <span>Administrar</span>
-              </button>
-            )}
-
-            <button
-              className="flex items-center space-x-2 text-red-500 py-2"
-              onClick={handleLogout}
-            >
-              <LogOut size={20} />
-              <span>Cerrar sesión</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      <Register isOpen={activeModal === "register"} onClose={closeModal} />
-      <Login
-        isOpen={activeModal === "login"}
-        onClose={closeModal}
-        openRegister={openRegister}
-      />
-
+  
+  const menuItems = (onDone) => (
+    <>
       <button
-        className="md:hidden"
+        className="nav-item"
         onClick={() => {
-          setMenuOpen(!menuOpen);
-          fetchUserRole();
+          onDone();
+          navigate("/perfil");
         }}
       >
-        {menuOpen ? <X size={28} /> : <Menu size={28} />}
+        <User size={18} /> Mi perfil
       </button>
+      {!isAdmin && (
+        <button
+          className="nav-item"
+          onClick={() => {
+            onDone();
+            navigate("/mis-reservas");
+          }}
+        >
+          <CalendarDays size={18} /> Mis reservas
+        </button>
+      )}
+      <button
+        className="nav-item"
+        onClick={() => {
+          onDone();
+          navigate("/favoritos");
+        }}
+      >
+        <Heart size={18} /> Mis favoritos
+      </button>
+      {isAdmin && (
+        <button
+          className="nav-item"
+          onClick={() => {
+            onDone();
+            navigate("/panel-administrador");
+          }}
+        >
+          <Settings size={18} /> Administrar
+        </button>
+      )}
+      <div className="my-1 h-px bg-line" />
+      <button className="nav-item !text-danger" onClick={handleLogout}>
+        <LogOut size={18} /> Cerrar sesión
+      </button>
+    </>
+  );
+
+  const avatar = (
+    <span className="grid place-items-center h-10 w-10 rounded-full bg-brand-soft text-brand-deep font-display font-extrabold text-sm">
+      {getInitials(user?.nombre, user?.apellido)}
+    </span>
+  );
+
+  return (
+   <>
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-line/80">
+      <div className="mx-auto max-w-7xl h-[72px] px-5 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group" aria-label="Terranova, ir al inicio">
+          <img src={logo} alt="" className="h-11 w-auto transition-transform group-hover:-rotate-6" />
+          <span className="font-display font-extrabold text-xl tracking-tight text-ink">
+            Terranova
+          </span>
+        </Link>
+
+        <div className="hidden md:flex items-center gap-3 relative">
+          <Link
+            to="/favoritos"
+            aria-label="Mis favoritos"
+            className="grid h-11 w-11 place-items-center rounded-full text-ink hover:bg-brand-soft transition-colors"
+          >
+            <Heart size={20} />
+          </Link>
+          {user ? (
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={profileMenuOpen}
+              className="flex items-center gap-3 rounded-full border border-line bg-white py-1 pl-1 pr-4 hover:border-ink transition-colors"
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+            >
+              {avatar}
+              <span className="text-sm font-semibold text-ink">{user.nombre}</span>
+              <ChevronDown size={16} className={`text-muted transition-transform ${profileMenuOpen ? "rotate-180" : ""}`} />
+            </button>
+          ) : (
+            <>
+              <button onClick={openLogin} className="btn btn-ghost !py-2.5">
+                Iniciar sesión
+              </button>
+              <button onClick={openRegister} className="btn btn-primary !py-2.5">
+                Crear cuenta
+              </button>
+            </>
+          )}
+
+          {profileMenuOpen && user && (
+            <div
+              ref={profileMenuRef}
+              role="menu"
+              className="absolute top-[calc(100%+10px)] right-0 w-56 bg-white rounded-2xl border border-line shadow-[var(--shadow-lift)] p-2 fade-in"
+            >
+              {menuItems(() => setProfileMenuOpen(false))}
+            </div>
+          )}
+        </div>
+
+        <button
+          className="md:hidden h-11 w-11 grid place-items-center rounded-full border border-line bg-white text-ink"
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          onClick={() => {
+            setMenuOpen(!menuOpen);
+            fetchUserRole();
+          }}
+        >
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
 
       {menuOpen && (
         <div
           ref={mobileMenuRef}
-          className="absolute top-16 right-6 bg-white shadow-md rounded-md p-4 flex flex-col space-y-3 md:hidden w-48"
+          className="md:hidden absolute top-[78px] right-4 left-4 bg-white rounded-2xl border border-line shadow-[var(--shadow-lift)] p-3 flex flex-col gap-1 fade-in"
         >
           {user ? (
             <>
-              <div className="flex items-center space-x-3 border-b pb-2">
-                <div className="h-12 w-12 rounded-full flex items-center text-2xl font-bold justify-center bg-gray-200">
-                  {getInitials(user.nombre, user.apellido)}
+              <div className="flex items-center gap-3 px-2 pb-3 mb-1 border-b border-line">
+                {avatar}
+                <div className="leading-tight">
+                  <p className="font-semibold text-ink">{user.nombre} {user.apellido}</p>
+                  <p className="text-xs text-muted">{user.email}</p>
                 </div>
-                <span className="text-[var(--color-default)] font-medium">
-                  {user.nombre}
-                </span>
               </div>
-              <Link
-                to="/perfil"
-                className="flex items-center space-x-2 text-[var(--color-default)] py-2"
-              >
-                <User size={20} />
-                <span>Mi perfil</span>
-              </Link>
-
-              {!isAdmin && (
-                <Link
-                  to="/mis-reservas"
-                  className="flex items-center space-x-2 text-[var(--color-default)] py-2"
-                >
-                  <CalendarDays size={20} />
-                  <span>Mis reservas</span>
-                </Link>
-              )}
-
-              {isAdmin && (
-                <button
-                  className="flex items-center space-x-2 py-2"
-                  onClick={() => {
-                    navigate("/panel-administrador");
-                    setProfileMenuOpen(false);
-                  }}
-                >
-                  <Settings size={20} />
-                  <span>Administrar</span>
-                </button>
-              )}
-
-              <button
-                className="flex items-center space-x-2 text-red-500 py-2"
-                onClick={handleLogout}
-              >
-                <LogOut size={20} />
-                <span>Cerrar sesión</span>
-              </button>
+              {menuItems(() => setMenuOpen(false))}
             </>
           ) : (
-            <>
+            <div className="flex flex-col gap-2 p-1">
               <button
-                onClick={openRegister}
-                className="bg-[var(--color-secondary)] text-white px-4 py-2 rounded"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openLogin();
+                }}
+                className="btn btn-ghost"
               >
-                Crear Cuenta
+                Iniciar sesión
               </button>
               <button
-                onClick={openLogin}
-                className="bg-[var(--color-emphasis)] text-white px-4 py-2 rounded"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openRegister();
+                }}
+                className="btn btn-primary"
               >
-                Iniciar Sesión
+                Crear cuenta
               </button>
-            </>
+            </div>
           )}
         </div>
       )}
     </header>
+     {/* Fuera del <header>: su desenfoque rompería el position:fixed del modal */}
+    <Register isOpen={activeModal === "register"} onClose={closeModal} />
+    <Login
+      isOpen={activeModal === "login"}
+      onClose={closeModal}
+      openRegister={openRegister}
+    />
+    </>
   );
 };
 

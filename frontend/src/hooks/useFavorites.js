@@ -1,7 +1,8 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { useAuth } from "../context/AuthContext";
 
-
+// Favoritos guardados en el navegador (localStorage), separados por usuario.
+// El backend no tiene favoritos, así que se guarda una copia mínima de cada tour.
 const listeners = new Set();
 const cache = new Map(); 
 

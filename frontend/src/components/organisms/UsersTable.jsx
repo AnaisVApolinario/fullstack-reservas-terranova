@@ -1,6 +1,7 @@
-import { ArrowUpDown, CircleAlert } from "lucide-react";
+import { ArrowUpDown, CircleAlert, Search } from "lucide-react";
+import Modal from "../atoms/Modal";
 import { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
 
 export const UsersTable = () => {
   const { user, listarUsuarios, cambiarRolUsuario } = useAuth();
@@ -15,7 +16,6 @@ export const UsersTable = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       const usuarios = await listarUsuarios();
-      console.log("Usuarios cargados:", usuarios);
       setUsers(usuarios);
     };
 
@@ -35,7 +35,7 @@ export const UsersTable = () => {
 
   const filteredUsers = sortedUsers.filter(
     (u) =>
-      u.nombre.toLowerCase().includes(search.toLowerCase()) || 
+      u.nombre.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -45,7 +45,6 @@ export const UsersTable = () => {
       return;
     }
 
-    console.log(`🔹 Usuario seleccionado para cambio de rol:`, userToModify);
     setSelectedUser(userToModify);
     setNewRole(role);
     setShowModal(true);
@@ -54,13 +53,10 @@ export const UsersTable = () => {
   const confirmRoleChange = async () => {
     if (!selectedUser) return;
 
-    console.log(`⚡ Confirmando cambio de rol para ID: ${selectedUser.id} a ${newRole}`);
-
     const response = await cambiarRolUsuario(selectedUser.id);
 
     if (response.success) {
       const updatedUsers = await listarUsuarios();
-      console.log("Lista de usuarios después del cambio:", updatedUsers);
       setUsers(updatedUsers);
     }
 
@@ -70,60 +66,75 @@ export const UsersTable = () => {
 
   return (
     <>
-      <div className="flex-1">
-        <h3 className="w-full text-center font-semibold text-gray-500 text-2xl py-3">
-          Administrar usuarios
-        </h3>
-        <div className="flex justify-between mb-4">
-          <button
-            className="hidden md:flex items-center bg-white px-4 py-2 rounded-full text-gray-700 shadow-lg"
-            onClick={toggleSort}
-          >
-            <ArrowUpDown className="w-4 h-4 mr-2" /> {sortByName ? "Ordenar por ID" : "Ordenar por nombre"}
-          </button>
+      <div className="min-w-0">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-extrabold text-ink">Usuarios</h2>
+            <p className="text-sm text-muted">{users.length} registrados</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+              <input
+                type="search"
+                aria-label="Buscar usuario"
+                placeholder="Buscar usuario"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="field !h-11 !w-64 !pl-10"
+              />
+            </div>
+            <button className="btn btn-ghost hidden md:inline-flex" onClick={toggleSort}>
+              <ArrowUpDown size={16} /> {sortByName ? "Ordenar por ID" : "Ordenar por nombre"}
+            </button>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg p-4">
-          <table className="w-full text-left border-collapse">
+        <div className="surface overflow-x-auto">
+          <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b">
-                <th className="py-2">ID</th>
-                <th className="py-2">Nombre</th>
-                <th className="py-2">Rol</th>
+              <tr className="bg-brand-soft/60 text-xs font-bold text-brand-deep">
+                <th className="px-5 py-3.5">ID</th>
+                <th className="px-5 py-3.5">Usuario</th>
+                <th className="px-5 py-3.5">Rol</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-line">
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((usuario) => (
-                  <tr key={usuario.id} className="border-b">
-                    <td className="py-2">{usuario.id}</td>
-                    <td className="py-2 flex items-center gap-2">
-                      <img
-                        src={usuario.profilePicture || "/profile.svg"}
-                        alt="Avatar"
-                        className="w-8 h-8 rounded-full"
-                      />
-                      {usuario.nombre} {usuario.apellido}
+                  <tr key={usuario.id} className="hover:bg-primary/60">
+                    <td className="px-5 py-3.5 text-muted">{usuario.id}</td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-soft text-xs font-extrabold text-brand-deep">
+                          {`${usuario.nombre?.[0] ?? ""}${usuario.apellido?.[0] ?? ""}`.toUpperCase()}
+                        </span>
+                        <div className="leading-tight">
+                          <p className="font-semibold text-ink">{usuario.nombre} {usuario.apellido}</p>
+                          <p className="text-xs text-muted">{usuario.email}</p>
+                        </div>
+                      </div>
                     </td>
-                    <td className="py-2">
+                    <td className="px-5 py-3.5">
                       <select
-                        className={`border-none rounded-lg p-1 ${
-                          usuario.usuarioRole === "ROLE_ADMIN" ? "bg-blue-100" : "bg-transparent"
-                        }`}
+                        aria-label={`Rol de ${usuario.nombre}`}
+                        className={`rounded-full border-0 px-3 py-1.5 text-xs font-bold ${
+                          usuario.usuarioRole === "ROLE_ADMIN" ? "bg-sun-soft text-[#8a5a10]" : "bg-brand-soft text-brand-deep"
+                          } disabled:opacity-70`}
                         value={usuario.usuarioRole}
                         disabled={usuario.id === user.id}
                         onChange={(e) => handleRoleChange(usuario, e.target.value)}
                       >
-                        <option value="ROLE_USER">User</option>
-                        <option value="ROLE_ADMIN">Admin</option>
+                        <option value="ROLE_USER">Usuario</option>
+                        <option value="ROLE_ADMIN">Administrador</option>
                       </select>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="text-center py-4">
-                    No users found
+                  <td colSpan="3" className="px-5 py-10 text-center text-muted">
+                    No se encontraron usuarios.
                   </td>
                 </tr>
               )}
@@ -132,45 +143,29 @@ export const UsersTable = () => {
         </div>
       </div>
 
-      {showModal && selectedUser && (
-        <div
-          className="fixed inset-0 bg-[#9799aaa8] flex justify-center items-center"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-white py-8 px-6 rounded-lg shadow-lg relative flex flex-col items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
-              onClick={() => setShowModal(false)}
-            >
-              ✖
-            </button>
-            <CircleAlert className="h-20 w-20 text-[#e67e24]" />
-            <h3 className="text-3xl font-semibold py-3">Confirmar</h3>
-            <p className="text-lg mb-4">
-              {`¿Estás seguro de cambiar el rol de ${selectedUser.nombre} a 
-              ${newRole === "ROLE_ADMIN" ? "Administrador" : "Usuario"}?`}
+      <Modal isOpen={!!(showModal && selectedUser)} onClose={() => setShowModal(false)}>
+        {selectedUser && (
+          <div className="flex flex-col items-center p-8 pt-10 text-center">
+            <span className="grid h-16 w-16 place-items-center rounded-full bg-sun-soft text-sun">
+              <CircleAlert size={32} />
+            </span>
+            <h3 className="mt-4 text-2xl font-extrabold text-ink">Cambiar rol</h3>
+            <p className="mt-2 text-muted">
+              {`¿Seguro que quieres cambiar el rol de ${selectedUser.nombre} a ${
+                newRole === "ROLE_ADMIN" ? "Administrador" : "Usuario"
+                }?`}
             </p>
-
-            <div className="flex gap-4">
-              <button
-                className="bg-green-500 text-white px-4 py-2 rounded"
-                onClick={confirmRoleChange}
-              >
-                Confirmar
-              </button>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={() => setShowModal(false)}
-              >
+            <div className="mt-6 flex w-full gap-3">
+              <button className="btn btn-ghost flex-1" onClick={() => setShowModal(false)}>
                 Cancelar
+              </button>
+              <button className="btn btn-primary flex-1" onClick={confirmRoleChange}>
+                Confirmar
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </>
   );
 };

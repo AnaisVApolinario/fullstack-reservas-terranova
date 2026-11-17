@@ -1,4 +1,5 @@
-import { ArrowLeft, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, MapPin, Heart, CalendarDays } from "lucide-react";
+import { useFavorites } from "../../hooks/useFavorites";
 import { DescriptionDetail } from "../molecules/DescriptionDetail";
 import { useNavigate, useParams } from "react-router-dom";
 import { CharacteristicsSection } from "../molecules/CharacteristicsSection";
@@ -36,14 +37,12 @@ const Modal = ({ isOpen, onClose, message }) => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center bg-black/50 z-50 transition-opacity duration-300 ${
-        isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-      }`}
+      className={`fixed inset-0 flex items-center justify-center bg-black/50 z-50 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
     >
       <div
-        className={`bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4 relative transition-transform duration-300 ${
-          isOpen ? "scale-100" : "scale-90"
-        }`}
+        className={`bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4 relative transition-transform duration-300 ${isOpen ? "scale-100" : "scale-90"
+          }`}
       >
         <div className="flex flex-col items-center">
           {icon}
@@ -52,7 +51,7 @@ const Modal = ({ isOpen, onClose, message }) => {
         </div>
         <div className="mt-4 flex justify-center">
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
+            className="btn btn-primary"
             onClick={onClose}
           >
             OK
@@ -78,6 +77,7 @@ export default function DetailCard() {
   const { dateAvailability, errorMessage } = useAvailability(id);
   const datePickerRef = useRef(null);
   const { user } = useAuth();
+  const { esFavorito, toggleFavorito } = useFavorites();
 
   const openLogin = () => setActiveModal("login");
   const openRegister = () => {
@@ -88,15 +88,15 @@ export default function DetailCard() {
   const today = new Date();
 
 
-const getTourDateRange = (startDate, duration) => {
-  const dates = [];
-  for (let i = 0; i < duration; i++) {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + i);
-    dates.push(date);
-  }
-  return dates;
-};
+  const getTourDateRange = (startDate, duration) => {
+    const dates = [];
+    for (let i = 0; i < duration; i++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
 
 
   const blockedDates = dateAvailability
@@ -185,89 +185,81 @@ const getTourDateRange = (startDate, duration) => {
   }, [showDatePicker]);
 
   if (!oneTour) {
-    return <div>Error al cargar el tour</div>;
+    return (
+      <div className="page-shell pt-32 pb-20 text-center text-muted">
+        Cargando tour...
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col bg-[var(--color-primary)]">
-      <header className="flex p-6 flex-col-reverse gap-4 md:gap-6 justify-between mt-[80px]  md:flex-row text-center md:text-left w-full">
-        <h1 className="font-bold uppercase text-2xl md:text-3xl text-[var(--color-default)] pl-4">
-          {oneTour.titulo}
-        </h1>
-        <button
-          className="flex items-center justify-start  bg-transparent border-none gap-2 text-[var(--color-emphasis)] text-sm font-medium w-full md:w-auto self-start md:self-auto px-4 md:px-0 ml-4 md:ml-0"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft /> Volver atrás
+    <div className="flex flex-col">
+      <div className="mx-auto w-full max-w-7xl px-5 pt-28">
+        <button className="back-link" onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} /> Volver atrás
         </button>
-      </header>
 
-      <main className="flex flex-col w-full p-4 md:py-8 md:px-16 gap-6">
+        <header className="mt-4 mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="chip"><MapPin size={14} /> {oneTour.pais}</span>
+              {oneTour.categoriaTours?.nombre && <span className="chip">{oneTour.categoriaTours.nombre}</span>}
+              {oneTour.duracion && (
+                <span className="chip"><Clock size={14} /> {oneTour.duracion} {Number(oneTour.duracion) === 1 ? "día" : "días"}</span>
+              )}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-ink leading-tight">
+              {oneTour.titulo}
+            </h1>
+          </div>
+          <button
+            type="button"
+            aria-pressed={esFavorito(oneTour.id)}
+            onClick={() => toggleFavorito(oneTour)}
+            className="btn btn-ghost"
+          >
+            <Heart size={18} className={esFavorito(oneTour.id) ? "fill-current text-danger" : ""} />
+            {esFavorito(oneTour.id) ? "Guardado" : "Guardar"}
+          </button>
+        </header>
+
         <ImageGallery images={oneTour.imagenes} />
 
-        <div className="w-full flex flex-col md:flex-row gap-10 items-start">
-          <div className="md:w-[65%] text-center md:text-left pr10">
+        <div className="mt-10 grid items-start gap-10 lg:grid-cols-[1fr_24rem]">
+          <div className="flex flex-col gap-10">
             <DescriptionDetail description={oneTour.descripcion} />
-            {oneTour.duracion && (
-              <div className="flex items-center gap-2 mt-4 text-gray-700 text-sm justify-center md:justify-start">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-[var(--color-emphasis)]"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <span>Este tour tiene {oneTour.duracion} días de duración</span>
-              </div>
-            )}
-
+            <CharacteristicsSection characteristics={oneTour.caracteristicas} />
           </div>
 
-          <div className="md:w-[33%] bg-white shadow-lg rounded-2xl p-6 border border-[var(--color-secondary)] text-left w-full md:ml-auto">
-            <h2 className="text-lg md:text-xl font-bold mb-5 text-center text-[var(--color-default)]">
-              Precio USD{" "}
-              <span className="text-[var(--color-emphasis)]">
-                ${oneTour.precio}
-              </span>{" "}
-              por persona
-            </h2>
+          <aside className="surface p-6 lg:sticky lg:top-24">
+            <p className="text-sm text-muted">Desde</p>
+            <p className="flex items-baseline gap-2">
+              <span className="font-display text-4xl font-extrabold text-brand-deep">USD {oneTour.precio}</span>
+              <span className="text-muted">por persona</span>
+            </p>
 
-            <div className="mb-4 relative">
-              <label className="text-sm font-semibold text-[var(--color-default)] block mb-1">
-                Selecciona fechas
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={startDate ? startDate.toLocaleDateString() : ""}
-                  readOnly
-                  className="border p-2 rounded-lg text-sm w-full"
-                  placeholder="Fecha de inicio"
-                  onClick={() => setShowDatePicker(true)}
-                />
-                <input
-                  type="text"
-                  value={endDate ? endDate.toLocaleDateString() : ""}
-                  readOnly
-                  className="border p-2 rounded-lg text-sm w-full bg-blue-100"
-                  placeholder="Fecha fin"
-                  disabled
-                />
-              </div>
+            <div className="mt-6 mb-4 relative">
+              <label className="field-label">Fecha de inicio</label>
+              <button
+                type="button"
+                className="field flex items-center gap-3"
+                onClick={() => setShowDatePicker(true)}
+              >
+                <CalendarDays size={18} className="text-brand-deep shrink-0" />
+                <span className={startDate ? "" : "text-[#8aa0a5]"}>
+                  {startDate ? startDate.toLocaleDateString() : "Elige un día"}
+                </span>
+              </button>
+              {endDate && (
+                <p className="mt-2 text-sm text-muted">
+                  Termina el <strong className="text-ink">{endDate.toLocaleDateString()}</strong> ({oneTour.duracion} {Number(oneTour.duracion) === 1 ? "día" : "días"})
+                </p>
+              )}
               {formError && (
-                <p className="text-red-600 text-sm font-medium mt-2">{formError}</p>
+                <p role="alert" className="mt-2 rounded-xl bg-danger-soft px-3 py-2 text-sm font-medium text-danger">{formError}</p>
               )}
               {showDatePicker && (
-                <div
-                  ref={datePickerRef}
-                  className="absolute z-50 bg-white shadow-lg rounded-lg mt-2"
-                >
+                <div ref={datePickerRef} className="absolute z-40 mt-2 left-0">
                   <DatePicker
                     selected={startDate}
                     onChange={handleDateChange}
@@ -282,45 +274,34 @@ const getTourDateRange = (startDate, duration) => {
               )}
             </div>
 
-            <div className="mb-4">
-              <label className="text-sm font-semibold text-[var(--color-default)] block mb-1">
-                Número de personas
-              </label>
+            <div className="mb-5">
+              <label className="field-label" htmlFor="guests">Número de personas</label>
               <select
+                id="guests"
                 value={guests}
                 onChange={(e) => setGuests(e.target.value)}
-                className="border p-2 rounded-lg text-sm w-full"
+                className="field"
               >
                 {[...Array(5).keys()].map((i) => (
                   <option key={i + 1} value={i + 1}>
-                    {i + 1}
+                    {i + 1} {i === 0 ? "persona" : "personas"}
                   </option>
                 ))}
               </select>
             </div>
 
-            <button
-              onClick={handleReserve}
-              className="bg-[var(--color-emphasis)] text-white font-medium text-sm px-6 py-3 rounded-xl w-full transition-all hover:bg-[var(--color-secondary)] hover:scale-105"
-            >
+            <div className="flex items-center justify-between border-t border-line pt-4 mb-5">
+              <span className="font-semibold text-ink">Total</span>
+              <span className="font-display text-2xl font-extrabold text-ink">USD {guests * oneTour.precio}</span>
+            </div>
+
+            <button onClick={handleReserve} className="btn btn-sun btn-block !py-4 text-base">
               Reservar
             </button>
-
-            <div className="mt-4 flex justify-between items-center">
-              <label className="text-sm font-semibold text-[var(--color-default)]">
-                Precio total USD
-              </label>
-              <p className="text-[var(--color-emphasis)] font-bold text-lg">
-                ${guests * oneTour.precio}
-              </p>
-            </div>
-          </div>
+            <p className="mt-3 text-center text-xs text-muted">Aún no se te cobra nada.</p>
+          </aside>
         </div>
-
-        <div className="flex justify-center items-center w-full min-h-[20vh]">
-          <CharacteristicsSection characteristics={oneTour.caracteristicas} />
-        </div>
-      </main>
+      </div>
 
       <Modal
         isOpen={showModal}

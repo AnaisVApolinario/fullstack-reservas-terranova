@@ -41,7 +41,7 @@ export const TourEditForm = ({ tour, onClose }) => {
   }
 
   return (
-    <div className="w-full mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className="w-full mx-auto p-6 bg-white rounded-lg">
       <h2 className="text-xl font-semibold text-center mb-4">
         Editar Categoría del Tour
       </h2>
@@ -49,33 +49,33 @@ export const TourEditForm = ({ tour, onClose }) => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="space-y-4">
           <label className="block">
-            <span className="text-gray-700">Título</span>
+            <span className="text-sm font-semibold text-muted">Título</span>
             <input type="text" value={tour.titulo} disabled className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100" />
           </label>
 
           <label className="block">
-            <span className="text-gray-700">Descripción</span>
+            <span className="text-sm font-semibold text-muted">Descripción</span>
             <textarea value={tour.descripcion} disabled className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"></textarea>
           </label>
 
           <label className="block">
-            <span className="text-gray-700">Duración</span>
+            <span className="text-sm font-semibold text-muted">Duración</span>
             <input type="number" value={tour.duracion} disabled className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100" />
           </label>
 
           <label className="block">
-            <span className="text-gray-700">País</span>
+            <span className="text-sm font-semibold text-muted">País</span>
             <input type="text" value={tour.pais} disabled className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100" />
           </label>
 
           <label className="block">
-            <span className="text-gray-700">Precio</span>
+            <span className="text-sm font-semibold text-muted">Precio</span>
             <input type="number" value={tour.precio} disabled className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100" />
           </label>
 
           {/* Imágenes */}
           <div className="space-y-4">
-            <span className="text-gray-700">Imágenes</span>
+            <span className="text-sm font-semibold text-muted">Imágenes</span>
             <div className="flex space-x-4">
               {tour.imagenes?.map((img, index) => (
                 <img key={index} src={img.urlImagen} alt={img.descripcion || `Imagen ${index + 1}`} className="h-24 w-24 object-cover border rounded-md" />
@@ -85,8 +85,8 @@ export const TourEditForm = ({ tour, onClose }) => {
 
           {/* Categoría (único campo editable) */}
           <label className="block">
-            <span className="text-gray-700">Categoría</span>
-            <select value={categoria} onChange={(e) => setCategoria(e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+     <span className="text-sm font-semibold text-muted">Categoría</span>
+            <select value={categoria} onChange={(e) => setCategoria(e.target.value)} className="field mt-1">
               <option value="" disabled>Selecciona una categoría</option>
               {categoryData.length > 0 ? (
                 categoryData.map((cat) => (
@@ -100,11 +100,11 @@ export const TourEditForm = ({ tour, onClose }) => {
         </div>
 
         <div className="flex justify-between">
-          <button type="button" className="bg-gray-400 text-white py-2 px-4 rounded-md cursor-pointer hover:bg-gray-500" onClick={onClose}>
+          <button type="button" className="btn btn-ghost" onClick={onClose}>
             Cerrar
           </button>
           
-          <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md cursor-pointer hover:bg-blue-600">
+          <button type="submit" className="btn btn-primary">
             Actualizar Categoría
           </button>
         </div>

@@ -1,12 +1,10 @@
 /* eslint-disable react/prop-types */
 export const DescriptionDetail = ({ description, subtitle = "" }) => {
   return (
-    <div className=" flex flex-col justify-start items-center w-full gap-2">
-      <h3 className="text-gray-700 text-lg w-full text-start font-semibold">
-        Descripción
-      </h3>
-      <h4 className="text-gray-400 text-sm w-full text-justify">{subtitle}</h4>
-      <p className="text-default text-sm w-full text-justify">{description}</p>
-    </div>
+   <section className="w-full">
+      <h2 className="text-2xl font-extrabold text-ink">Sobre este tour</h2>
+      {subtitle && <h3 className="mt-1 text-sm text-muted">{subtitle}</h3>}
+      <p className="mt-3 max-w-prose text-[1.05rem] leading-8 text-default/90">{description}</p>
+    </section>
   );
 };

@@ -1,63 +1,58 @@
 /* eslint-disable react/prop-types */
-export const ImageGallery = ({ images = [], type = "consult" }) => {
-  return (
-    <div className="w-full max-w-full">
-      {images.length > 1 && type === "consult" ? (
-        <div className="flex gap-4 overflow-x-auto whitespace-nowrap touch-pan-x [&::-webkit-scrollbar]:hidden scrollbar-none md:hidden snap-x snap-mandatory">
-          {images.map((img, index) => (
-            <img
-              key={index + "mobile"}
-              className="h-56 w-auto object-cover rounded-lg flex-shrink-0 snap-start"
-              src={img.urlImagen}
-              alt={`Imagen ${index + 1}`}
-            />
-          ))}
-        </div>
-      ) : (
-        <img
-          className="w-full object-cover h-76 rounded-lg md:hidden"
-          src={images[0]?.urlImagen}
-          alt="Imagen 1"
-        />
-      )}
+const img = "w-full h-full object-cover";
+const fill = "absolute inset-0 h-full w-full object-cover";
+const tile = "relative overflow-hidden rounded-[1.75rem] bg-brand-soft";
 
+export const ImageGallery = ({ images = [], type = "consult" }) => {
+  if (!images.length) return null;
+
+  // Vista compacta (reservas): una sola imagen
+  if (type !== "consult") {
+    return (
+      <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-brand-soft">
+        <img className={img} src={images[0]?.urlImagen} alt="Imagen del tour" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full">
+      {/* móvil: carrusel */}
+      <div className="flex gap-3 overflow-x-auto touch-pan-x [&::-webkit-scrollbar]:hidden snap-x snap-mandatory md:hidden">
+        {images.map((im, index) => (
+          <img
+            key={index + "mobile"}
+            className="h-60 w-[85%] shrink-0 snap-start object-cover rounded-2xl"
+            src={im.urlImagen}
+            alt={`Imagen ${index + 1}`}
+          />
+        ))}
+      </div>
       <div className="hidden md:block">
         {images.length === 1 && (
-          <img
-            className="w-full object-cover h-76 rounded-lg"
-            src={images[0].urlImagen}
-            alt="Imagen 1"
-          />
+          <div className={`h-[26rem] ${tile}`}>
+            <img className={fill} src={images[0].urlImagen} alt="Imagen 1" />
+          </div>
         )}
-
         {images.length === 2 && (
-          <div className="grid grid-cols-2 gap-4">
-            {images.map((img, index) => (
-              <img
-                key={index + "imgCard"}
-                className="w-full object-cover h-76 rounded-lg"
-                src={img.urlImagen}
-                alt={`Imagen ${index + 1}`}
-              />
+          <div className="grid h-[26rem] grid-cols-2 grid-rows-[minmax(0,1fr)] gap-3">
+            {images.map((im, index) => (
+              <div key={index + "imgCard"} className={tile}>
+                <img className={fill} src={im.urlImagen} alt={`Imagen ${index + 1}`} />
+              </div>
             ))}
           </div>
         )}
-
         {images.length >= 3 && (
-          <div className="grid grid-cols-[66%_33%] gap-4">
-            <img
-              className="w-full object-cover h-full md:h-76 rounded-lg"
-              src={images[0].urlImagen}
-              alt="Imagen 1"
-            />
-            <div className="grid grid-rows-2 gap-4">
-              {images.slice(1, 3).map((img, index) => (
-                <img
-                  key={index + "imagCards"}
-                  className="w-full object-cover h-56 md:h-36 rounded-lg"
-                  src={img.urlImagen}
-                  alt={`Imagen ${index + 2}`}
-                />
+          <div className="grid h-[26rem] grid-cols-[2fr_1fr] grid-rows-[minmax(0,1fr)] gap-3">
+            <div className={tile}>
+              <img className={fill} src={images[0].urlImagen} alt="Imagen 1" />
+            </div>
+            <div className="grid grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
+              {images.slice(1, 3).map((im, index) => (
+                <div key={index + "imagCards"} className={tile}>
+                  <img className={fill} src={im.urlImagen} alt={`Imagen ${index + 2}`} />
+                </div>
               ))}
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { useState } from "react";
 import { ModalConfirmReservation } from "../molecules/ModalConfirmReservation";
 import { ReservationSummary } from "../organisms/ReservationSummary";
@@ -12,7 +12,7 @@ export default function ReservationDetail() {
     success: false,
     message: "",
   });
-  
+
   const navigate = useNavigate();
   const location = useLocation();
   const tour = location.state?.tour || {};
@@ -27,22 +27,22 @@ export default function ReservationDetail() {
   });
 
   const formatDateToYYYYMMDD = (date) => {
-  if (!date) return "";
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+    if (!date) return "";
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-const requestData = {
-  tourId: tour.id,
-  estado: "CONFIRMADA",
-  fechaFin: formatDateToYYYYMMDD(endDate),
-  fechaInicio: formatDateToYYYYMMDD(startDate),
-  numPersonas: guests,
-  total: guests * tour.precio,
-  usuarioId: user.id,
+  const requestData = {
+    tourId: tour.id,
+    estado: "CONFIRMADA",
+    fechaFin: formatDateToYYYYMMDD(endDate),
+    fechaInicio: formatDateToYYYYMMDD(startDate),
+    numPersonas: guests,
+    total: guests * tour.precio,
+    usuarioId: user.id,
     tourId: tour.id,
     estado: "CONFIRMADA",
     fechaFin: endDate,
@@ -56,40 +56,32 @@ const requestData = {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await postCreateReservation(requestData);
-    setModal({ isOpen: true, success: true, message: "Reserva confirmada con éxito" });
-    console.log(response, "response");
-  } catch (error) {
-    console.error("Error al crear reserva:", error.message);
-    setModal({
-      isOpen: true,
-      success: false,
-      message: error.message || "Ocurrió un error inesperado",
-    });
-  }
-};
+    try {
+      const response = await postCreateReservation(requestData);
+      setModal({ isOpen: true, success: true, message: "Reserva confirmada con éxito" });
+    } catch (error) {
+      console.error("Error al crear reserva:", error.message);
+      setModal({
+        isOpen: true,
+        success: false,
+        message: error.message || "Ocurrió un error inesperado",
+      });
+    }
+  };
 
-  
+
 
   return (
     <>
-      <div className="flex flex-col bg-[var(--color-primary)] min-h-screen py-25 px-6 md:px-10">
-        <header className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-[var(--color-default)]">
-            Detalle de la reserva
-          </h1>
-          <button
-            className="flex items-center text-[var(--color-emphasis)] gap-2 font-medium"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft /> Volver atrás
-          </button>
-        </header>
+      <div className="mx-auto w-full max-w-6xl px-5 pt-28">
+        <button className="back-link" onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} /> Volver atrás
+        </button>
+        <h1 className="mt-4 mb-8 text-4xl font-extrabold text-ink">Confirma tu reserva</h1>
 
-        <main className="flex flex-col md:flex-row gap-10 md:justify-between flex-grow">
+        <main className="grid items-start gap-8 lg:grid-cols-[1fr_26rem]">
           <ReservationSummary
             tour={tour}
             guests={guests}
@@ -97,42 +89,36 @@ const requestData = {
             endDate={endDate}
           />
 
-          <section className="md:w-7/12 bg-white shadow-lg rounded-2xl p-6 border md:max-w-[500px] border-[var(--color-secondary)] h-full">
-            <h2 className="text-lg font-bold mb-4 text-[var(--color-default)]">
-              Datos del contacto
-            </h2>
+          <section className="surface p-6 lg:sticky lg:top-24">
+            <h2 className="text-xl font-bold text-ink">Datos de contacto</h2>
+            <p className="mt-1 text-sm text-muted">Usamos los datos de tu cuenta.</p>
 
-            <form
-              className="flex flex-col h-full space-y-4 flex-grow"
-              onSubmit={handleSubmit}
-            >
-              <div className="grid grid-cols-2 gap-4">
+            <form className="mt-5 flex flex-col gap-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--color-default)]">
-                    Nombre
-                  </label>
+                  <label className="field-label" htmlFor="firstName">Nombre</label>
                   <input
+                    id="firstName"
                     type="text"
                     name="firstName"
                     value={user.nombre}
                     onChange={handleChange}
                     placeholder="Nombre"
-                    className="border border-gray-300 p-2 rounded-lg w-full bg-blue-100"
+                    className="field"
                     required
                     disabled
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--color-default)]">
-                    Apellido
-                  </label>
+                  <label className="field-label" htmlFor="lastName">Apellido</label>
                   <input
+                    id="lastName"
                     type="text"
                     name="lastName"
                     value={user.apellido}
                     onChange={handleChange}
                     placeholder="Apellido"
-                    className="border border-gray-300 p-2 rounded-lg w-full bg-blue-100"
+                    className="field"
                     required
                     disabled
                   />
@@ -140,27 +126,26 @@ const requestData = {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[var(--color-default)]">
-                  Correo Electrónico
-                </label>
+                <label className="field-label" htmlFor="email">Correo electrónico</label>
                 <input
+                  id="email"
                   type="email"
                   name="email"
                   value={user.email}
                   onChange={handleChange}
-                  placeholder="Correo Electrónico"
-                  className="border border-gray-300 p-2 rounded-lg w-full bg-blue-100"
+                  placeholder="Correo electrónico"
+                  className="field"
                   required
                   disabled
                 />
               </div>
 
-              <button
-                type="submit"
-                className="bg-[var(--color-emphasis)] text-white font-medium text-sm px-6 py-3 rounded-xl w-full hover:scale-105"
-              >
-                Reservar
+              <button type="submit" className="btn btn-sun btn-block !py-4 text-base mt-2">
+                Confirmar reserva
               </button>
+              <p className="flex items-center justify-center gap-1.5 text-xs text-muted">
+                <Lock size={13} /> Aún no se te cobra nada.
+              </p>
             </form>
           </section>
         </main>

@@ -3,8 +3,6 @@ import { Calendar, Clock, MapPin, User } from "lucide-react";
 import { CharacteristicsSection } from "../molecules/CharacteristicsSection";
 import { ImageGallery } from "../molecules/ImageGallery";
 
-
-
 const parseDateWithoutTimezone = (date) => {
   if (!date) return null;
   if (typeof date === "string") {
@@ -14,66 +12,75 @@ const parseDateWithoutTimezone = (date) => {
   return date; // ya es un objeto Date
 };
 
+const fmt = (d) => (d ? parseDateWithoutTimezone(d).toLocaleDateString() : "No seleccionada");
 
 export const ReservationSummary = ({
   tour,
   guests,
   startDate,
   endDate,
-  isCompact = false, // permite ajustar estilos si viene desde MisReservas
+  isCompact = false, // tarjeta pequeña para "Mis reservas"
 }) => {
   const totalPrice = guests * tour.precio;
 
-  return (
-    <section
-      className={`bg-white shadow-lg rounded-2xl border border-[var(--color-secondary)] ${
-        isCompact ? "p-4 flex flex-col h-full" : "md:w-5/12 p-6"
-      }`}
-    >
-      <div className={isCompact ? "aspect-video overflow-hidden rounded-md mb-4" : ""}>
-        <ImageGallery type="Reservation" images={tour.imagenes} />
+    const datos = (
+      <ul className="space-y-3 text-sm text-ink">
+        <li className="flex items-center gap-3">
+          <User size={18} className="text-brand-deep" />
+          <span><strong>{guests}</strong> {Number(guests) === 1 ? "persona" : "personas"}</span>
+        </li>
+        <li className="flex items-center gap-3">
+          <Calendar size={18} className="text-brand-deep" />
+          <span>{fmt(startDate)} – {fmt(endDate)}</span>
+        </li>
+        <li className="flex items-center gap-3">
+          <Clock size={18} className="text-brand-deep" />
+          <span>{tour.duracion} {Number(tour.duracion) === 1 ? "día" : "días"}</span>
+        </li>
+      </ul>
+    );
+  
+    const total = (
+      <div className="flex items-center justify-between border-t border-dashed border-line pt-4">
+        <span className="text-sm font-semibold text-muted">Total</span>
+        <span className="font-display text-2xl font-extrabold text-ink">USD {totalPrice.toFixed(2)}</span>
       </div>
-
-      <div className="mb-4">
-        <h2 className={`font-bold text-[var(--color-default)] ${isCompact ? "text-base" : "text-xl"} mb-2`}>
-          {tour.titulo}
-        </h2>
-        <div className="flex items-center text-gray-600 gap-2 text-sm">
-          <MapPin className="w-5 h-5 text-[var(--color-emphasis)]" />
-          <span>{tour.pais}</span>
+    );
+  
+    if (isCompact) {
+      return (
+        <section className="surface flex h-full flex-col overflow-hidden">
+          <div className="aspect-[16/10] overflow-hidden bg-brand-soft">
+            <img src={tour.imagenes?.[0]?.urlImagen} alt={tour.titulo} className="h-full w-full object-cover" />
+          </div>
+          <div className="flex flex-1 flex-col gap-4 p-5">
+            <div>
+              <p className="flex items-center gap-1.5 text-sm font-medium text-muted">
+                <MapPin size={15} className="text-brand-deep" /> {tour.pais}
+              </p>
+              <h2 className="mt-1 text-xl font-bold text-ink">{tour.titulo}</h2>
+            </div>
+            {datos}
+            <div className="mt-auto">{total}</div>
+          </div>
+        </section>
+      );
+    }
+  
+    return (
+      <section className="surface overflow-hidden">
+        <ImageGallery type="Reservation" images={tour.imagenes || []} />
+        <div className="flex flex-col gap-5 p-6">
+          <div>
+            <p className="flex items-center gap-1.5 text-sm font-medium text-muted">
+              <MapPin size={15} className="text-brand-deep" /> {tour.pais}
+            </p>
+            <h2 className="mt-1 text-2xl font-extrabold text-ink">{tour.titulo}</h2>
+          </div>
+          {datos}
+          <CharacteristicsSection characteristics={tour.caracteristicas} small />
+          {total}
         </div>
-      </div>
-
-      <div className="text-gray-700 space-y-3 text-sm">
-        <div className="flex items-center gap-2">
-          <User className="w-5 h-5 text-[var(--color-emphasis)]" />
-          <span>
-            <strong>{guests}</strong> personas
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-[var(--color-emphasis)]" />
-          <span>
-            {startDate ? parseDateWithoutTimezone(startDate).toLocaleDateString() : "No seleccionada"} -{" "}
-            {endDate ? parseDateWithoutTimezone(endDate).toLocaleDateString() : "No seleccionada"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock className="w-5 h-5 text-[var(--color-emphasis)]" />
-          <span>{tour.duracion} días</span>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <CharacteristicsSection characteristics={tour.caracteristicas} />
-      </div>
-
-      <hr className="my-4 border-t border-gray-300" />
-
-      <div className="flex justify-between items-center font-semibold text-[var(--color-default)] text-sm">
-        <span>Precio total:</span>
-        <span>${totalPrice.toFixed(2)}</span>
-      </div>
     </section>
   );
 };

@@ -135,7 +135,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
 
   return (
     <>
-      <div className="w-full mx-auto p-6 bg-white shadow-md rounded-lg">
+      <div className="w-full mx-auto p-6 bg-white rounded-lg">
         <h2 className="text-xl font-semibold text-center mb-4">
           {action} Tour
         </h2>
@@ -181,7 +181,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
             {/* Campos del formulario */}
             <div className="space-y-4">
               <label className="block">
-                <span className="text-gray-700">Título</span>
+                <span className="text-sm font-semibold text-muted">Título</span>
                 <input
                   type="text"
                   value={titulo}
@@ -193,7 +193,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
                 />
               </label>
               <label className="block">
-                <span className="text-gray-700">Descripción</span>
+                <span className="text-sm font-semibold text-muted">Descripción</span>
                 <textarea
                   value={descripcion}
                   disabled={action === "Editar"}
@@ -208,7 +208,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
                   action === "Editar" ? "bg-blue-100" : "bg-transparent"
                 }`}
               >
-                <legend className="text-gray-700 font-semibold">
+                <legend className="text-sm font-semibold text-muted">
                   Características
                 </legend>
                 {characTour.length > 0 ? (
@@ -236,11 +236,11 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
 
               {/* Categoría */}
               <label className="block">
-                <span className="text-gray-700">Categoría</span>
+                <span className="text-sm font-semibold text-muted">Categoría</span>
                 <select
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                  className="field mt-1"
                 >
                   <option value="" disabled>
                     Selecciona una categoría
@@ -259,7 +259,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
 
               {/* Duración */}
               <label className="block">
-                <span className="text-gray-700">Duración</span>
+                <span className="text-sm font-semibold text-muted">Duración</span>
                 <input
                   type="number"
                   value={duracion}
@@ -267,7 +267,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
                   const value = Math.max(1, parseInt(e.target.value, 10) || 1); // Asegura que sea al menos 1
                   setDuracion(value);
                   }}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                  className="field mt-1"
                   placeholder="Duración en días"
                   min="1" // Evita que el usuario ingrese valores menores a 1 manualmente
                 />
@@ -276,7 +276,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
 
               {/* Precio */}
               <label className="block">
-                <span className="text-gray-700">Precio en USD</span>
+                <span className="text-sm font-semibold text-muted">Precio en USD</span>
                 <input
                   type="number"
                   value={precio}
@@ -287,7 +287,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
                       setPrecio(value);
                     }
                   }}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                  className="field mt-1"
                   placeholder="Precio del tour"
                   min="0"
                   step="0.01"
@@ -296,11 +296,11 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
 
               {/* Ubicación/país */}
               <label className="block">
-                <span className="text-gray-700">País</span>
+                <span className="text-sm font-semibold text-muted">País</span>
                 <select
                   value={pais}
                   onChange={(e) => setPais(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                  className="field mt-1"
                 >
                   <option value="" disabled>
                     Selecciona un país
@@ -331,7 +331,7 @@ export const TourForm = ({ action, tour = {}, onClose }) => {
 
           <button
             type="submit"
-            className="w-full bg-[var(--color-secondary)] text-white py-2 rounded-md cursor-pointer hover:bg-blue-500"
+            className="btn btn-primary btn-block !py-3.5"
           >
             {action === "Nuevo" ? "Agregar Tour" : "Actualizar Tour"}
           </button>

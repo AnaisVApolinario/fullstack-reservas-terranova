@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import Modal from "../atoms/Modal";
 import { InputField } from "../atoms/InputField";
 import { useAuth } from "../../context/AuthContext";
+import { AlertCircle } from "lucide-react";
 import logo from "../../assets/logo.png";
 
 const Login = ({ isOpen, onClose, openRegister }) => {
@@ -14,38 +15,27 @@ const Login = ({ isOpen, onClose, openRegister }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔹 Intentando hacer login con:", email, password);
-
     const result = await login(email, password);
-    console.log("🔹 Resultado del login:", result);
-
     if (result.success) {
-      setTimeout(() => {
-        console.log(
-          "🔹 Usuario guardado en localStorage:",
-          JSON.parse(localStorage.getItem("user"))
-        );
-      }, 500);
-
       onClose();
       setEmail("");
       setPassword("");
     } else {
-      console.error("❌ Error en login:", result.message);
       setErrorMessage(result.message);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} backgroundOpacity="10%">
-      <form className="flex flex-col space-y-6 p-6" onSubmit={handleSubmit}>
-        <img src={logo} alt="Terranova Logo" className="h-20 w-auto mx-auto" />
-        <h2 className="text-center text-2xl font-bold mt-4">
-          Bienvenido a Terranova
-        </h2>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <form className="flex flex-col gap-4 p-8 pt-10" onSubmit={handleSubmit}>
+        <div className="text-center mb-2">
+          <img src={logo} alt="" className="h-14 w-auto mx-auto" />
+          <h2 className="mt-4 text-3xl font-extrabold text-ink">Qué bueno verte</h2>
+          <p className="mt-1 text-muted">Inicia sesión para reservar tu próximo tour.</p>
+        </div>
         <InputField
-          label="Correo Electrónico"
-          placeholder="Correo Electrónico"
+          label="Correo electrónico"
+          placeholder="tu@correo.com"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -54,7 +44,7 @@ const Login = ({ isOpen, onClose, openRegister }) => {
         />
         <InputField
           label="Contraseña"
-          placeholder="Contraseña"
+          placeholder="Tu contraseña"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -63,28 +53,22 @@ const Login = ({ isOpen, onClose, openRegister }) => {
         />
 
         {errorMessage && (
-          <p className="text-red-600 text-sm text-center w-full my-5">
-            {errorMessage}
+          <p role="alert" className="flex items-center gap-2 rounded-xl bg-danger-soft px-3.5 py-2.5 text-sm font-medium text-danger">
+            <AlertCircle size={16} className="shrink-0" /> {errorMessage}
           </p>
         )}
 
-        <a href="#" className="text-[var(--color-emphasis)] text-right">
-          ¿Olvidaste tu contraseña?
-        </a>
-        <button
-          className="bg-[var(--color-secondary)] text-white px-4 py-2 rounded transition-transform transform hover:scale-105 active:scale-95 cursor-pointer"
-          type="submit"
-        >
-          Iniciar Sesión
+        <button className="btn btn-primary btn-block !py-3.5 mt-1" type="submit">
+          Iniciar sesión
         </button>
-        <p className="text-center text-sm mt-4">
-          ¿No tienes una cuenta?{" "}
+        <p className="text-center text-sm text-muted">
+          ¿No tienes cuenta?{" "}
           <button
             type="button"
             onClick={openRegister}
-            className="text-[var(--color-emphasis)] hover:underline"
+            className="font-semibold text-brand-deep hover:underline"
           >
-            Regístrate aquí
+            Crea una gratis
           </button>
         </p>
       </form>

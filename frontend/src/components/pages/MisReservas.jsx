@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Ticket } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { ReservationSummary } from "../organisms/ReservationSummary";
 import { API_BASE_URL } from "../../constants/endpoints";
@@ -42,67 +44,66 @@ export const MisReservas = () => {
     })
     .sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio));
 
+  const tab = (activo, texto) => (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={activo}
+      onClick={() => setMostrarAntiguas(texto === "Pasadas")}
+      className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+        activo ? "bg-ink text-white" : "text-ink hover:bg-brand-soft"
+        }`}
+    >
+      {texto}
+    </button>
+  );
+
   return (
-    <div className="p-4 sm:p-6 mt-24">
-      <div className="flex justify-end mb-4">
-        <button
-          className="flex items-center bg-transparent border-none gap-2 text-[var(--color-emphasis)] text-sm font-medium"
-          onClick={() => (window.location.href = "/")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Volver al inicio
-        </button>
-      </div>
+    <main className="page-shell w-full max-w-7xl pt-28 min-h-[60vh]">
+      <Link to="/" className="back-link">
+        <ArrowLeft size={18} /> Volver al inicio
+      </Link>
 
-      <h1 className="text-xl sm:text-2xl font-semibold text-center text-[var(--color-default)] mb-6">
-        {mostrarAntiguas ? "Reservas pasadas" : "Mis reservas vigentes"}
-      </h1>
-
-      <div className="flex justify-center mb-8">
-        <button
-          className="bg-[var(--color-secondary)] text-white px-4 py-2 rounded-full hover:bg-[var(--color-emphasis)] transition-all"
-          onClick={() => setMostrarAntiguas((prev) => !prev)}
-        >
-          {mostrarAntiguas ? "Ver vigentes" : "Ver pasadas"}
-        </button>
+      <div className="mt-4 mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-extrabold text-ink">Mis reservas</h1>
+          <p className="mt-1 text-muted">
+            {mostrarAntiguas ? "Tus viajes anteriores." : "Tus próximos tours."}
+          </p>
+        </div>
+        <div role="tablist" className="inline-flex rounded-full border border-line bg-white p-1">
+          {tab(!mostrarAntiguas, "Vigentes")}
+          {tab(mostrarAntiguas, "Pasadas")}
+        </div>
       </div>
 
       {reservasFiltradas.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No tienes reservas {mostrarAntiguas ? "pasadas" : "vigentes"}{" "}
-          registradas.
-        </p>
+        <div className="empty-state">
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-soft text-brand-deep">
+            <Ticket size={28} />
+          </span>
+          <p className="mt-4 font-display text-xl font-bold text-ink">
+            No tienes reservas {mostrarAntiguas ? "pasadas" : "vigentes"}
+          </p>
+          <p className="mt-2">
+            {mostrarAntiguas ? "Cuando termines un tour, aparecerá aquí." : "Elige tu próximo destino y reserva en minutos."}
+          </p>
+          {!mostrarAntiguas && <Link to="/" className="btn btn-primary mt-6">Explorar tours</Link>}
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {reservasFiltradas.map((reserva) => (
-            <div key={reserva.id} className="h-full flex">
-              <div className="w-full">
-                <ReservationSummary
-                  key={reserva.id}
-                  tour={reserva.tour}
-                  guests={reserva.numPersonas}
-                  startDate={reserva.fechaInicio}
-                  endDate={reserva.fechaFin}
-                  isCompact={true}
-                />
-              </div>
-            </div>
+            <ReservationSummary
+              key={reserva.id}
+              tour={reserva.tour}
+              guests={reserva.numPersonas}
+              startDate={reserva.fechaInicio}
+              endDate={reserva.fechaFin}
+              isCompact={true}
+            />
           ))}
         </div>
       )}
-    </div>
+    </main>
   );
 };
