@@ -4,7 +4,7 @@ Aplicación web **full stack** para explorar, buscar y reservar tours por Latino
 
 ![Pantalla de inicio](docs/home.png)
 
-> 🎥 **Video demo:** [ver el recorrido de 90 segundos](PEGA_AQUI_EL_LINK_DEL_VIDEO)
+> 🎥 **Video demo:** [ver demo](PEGA_AQUI_EL_LINK_DEL_VIDEO)
 
 ---
 
@@ -54,8 +54,8 @@ Navegador ──► Frontend (React + Nginx) ──► API REST (Spring Boot) �
 Solo necesitas [Docker Desktop](https://www.docker.com/products/docker-desktop/) abierto.
 
 ```bash
-git clone https://github.com/AnaisVApolinario/proyecto-fullstack-reservas.git
-cd proyecto-fullstack-reservas
+git clone https://github.com/AnaisVApolinario/fullstack-reservas-terranova.git
+cd fullstack-reservas-terranova
 docker compose up -d --build
 ```
 
@@ -78,8 +78,6 @@ Para apagarlo: `docker compose down`. Para apagarlo y reiniciar la base de datos
 | Usuario | `pedro@dh.com` | `user` |
 
 También puedes crear tu propia cuenta desde *Crear Cuenta*. Son datos de prueba, solo para demostración.
-
-> Las imágenes de ejemplo son marcadores de posición generados. Las imágenes que subas desde el panel de administración sí se guardan y se muestran.
 
 ---
 
@@ -127,13 +125,13 @@ La lista completa está en Swagger.
 
 ## 👥 Sobre el proyecto
 
-Terranova nació como un proyecto grupal de [ESCRIBE AQUÍ el contexto: bootcamp, curso o universidad], desarrollado en equipo de [N] personas. Este repositorio es mi versión del proyecto, desplegable con un solo comando.
+Terranova nació como un **proyecto integrador grupal en la carrera Certified Tech Developer de Digital House**, en el que trabajamos varias personas organizadas por áreas: **backend, frontend, UX/UI e infraestructura**.
 
-**Mi participación:** [ESCRIBE AQUÍ, con tus palabras, qué hiciste tú: por ejemplo las pantallas o funciones que construiste, la parte del backend, el panel de administración, Docker, etc.]
+**Mi participación:** trabajé en el área de **diseño UX/UI** y en el **backend**, en el CRUD de tours, la gestión de fechas y disponibilidad de los tours.
 
----
+Este repositorio es **mi propia versión** del proyecto, adaptada para que cualquiera pueda ejecutarla con un solo comando (`docker compose up -d --build`), sin servicios de pago. Incluye mejoras que desarrollé de forma individual luego de finalizar la carrera:
 
-## 🔮 Posibles mejoras
-
-- Verificación de correo electrónico al registrarse.
-- Pagos en línea.
+- **Rediseño UX/UI** de todas las pantallas: nueva identidad visual y componentes más consistentes.
+- **Favoritos** para guardar tours.
+- **Docker Compose** para levantar base de datos, backend y frontend.
+- **Imágenes de ejemplo** generadas, para que el proyecto se vea completo sin depender de servicios externos.
