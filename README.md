@@ -4,7 +4,7 @@ Aplicación web **full stack** para explorar, buscar y reservar tours por Latino
 
 ![Pantalla de inicio](docs/home.png)
 
-> 🎥 **Video demo:** [ver demo](PEGA_AQUI_EL_LINK_DEL_VIDEO)
+> 🎥 **Video demo:** [ver demo](https://github.com/user-attachments/assets/84811a01-5689-4d94-8e4a-186646721403)
 
 ---
 
